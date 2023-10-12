@@ -8,6 +8,7 @@ from sqlalchemy import (
     Update,
 )
 from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.ext.declarative import declarative_base
 
 from src.config import settings
 from src.constants import DB_NAMING_CONVENTION
@@ -16,6 +17,7 @@ DATABASE_URL = str(settings.DATABASE_URL)
 
 engine = create_async_engine(DATABASE_URL)
 metadata = MetaData(naming_convention=DB_NAMING_CONVENTION)
+Base = declarative_base(metadata=metadata)
 
 
 async def fetch_one(select_query: Select | Insert | Update) -> dict[str, Any] | None:

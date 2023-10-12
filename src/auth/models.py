@@ -1,37 +1,29 @@
 from sqlalchemy import (
-    Boolean,
     Column,
     DateTime,
     ForeignKey,
     Identity,
     Integer,
-    LargeBinary,
     String,
-    Table,
     func,
 )
-from sqlalchemy.dialects.postgresql import UUID
 
-from src.database import metadata
+from src.database import Base
 
-auth_user = Table(
-    "auth_user",
-    metadata,
-    Column("id", Integer, Identity(), primary_key=True),
-    Column("email", String, nullable=False),
-    Column("password", LargeBinary, nullable=False),
-    Column("is_admin", Boolean, server_default="false", nullable=False),
-    Column("created_at", DateTime, server_default=func.now(), nullable=False),
-    Column("updated_at", DateTime, onupdate=func.now()),
-)
 
-refresh_tokens = Table(
-    "auth_refresh_token",
-    metadata,
-    Column("uuid", UUID, primary_key=True),
-    Column("user_id", ForeignKey("auth_user.id", ondelete="CASCADE"), nullable=False),
-    Column("refresh_token", String, nullable=False),
-    Column("expires_at", DateTime, nullable=False),
-    Column("created_at", DateTime, server_default=func.now(), nullable=False),
-    Column("updated_at", DateTime, onupdate=func.now()),
-)
+class AuthRefreshToken(Base):
+    __tablename__ = "auth_refresh_tokens"
+
+    id = Column("id", Integer, Identity(), primary_key=True)
+    user_id = Column(
+        "user_id", ForeignKey("auth_user.id", ondelete="CASCADE"), nullable=False
+    )
+    refresh_token = Column("refresh_token", String, nullable=False)
+    expires_at = Column("expires_at", DateTime, nullable=False)
+    created_at = Column(
+        "created_at", DateTime, server_default=func.now(), nullable=False
+    )
+    updated_at = Column("updated_at", DateTime, onupdate=func.now())
+
+    def __repr__(self):
+        return f"({self.id} {self.first_name} {self.last_name})"
