@@ -13,3 +13,9 @@ docker run -p 5432:5432 -e POSTGRES PASSWORD="postgres" -e POSTGRES DB="jobhunte
 cp .env.example .env
 
 uvicorn --reload --proxy-headers --host localhost --port 8000 src.main:app
+
+create migrations:
+alembic revision --autogenerate -m "migration comment"
+
+apply migrations:
+alembic upgrade head

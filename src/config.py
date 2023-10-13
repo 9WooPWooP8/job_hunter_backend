@@ -1,7 +1,7 @@
 from typing import Any
 
 from pydantic import PostgresDsn
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from src.constants import Environment
 
@@ -19,8 +19,10 @@ class Config(BaseSettings):
 
     APP_VERSION: str = "1"
 
+    model_config = SettingsConfigDict(extra="ignore")
 
-settings = Config(_env_file=".env")
+
+settings = Config(_env_file=".env", extra="ignore")
 
 app_configs: dict[str, Any] = {"title": "App API"}
 if settings.ENVIRONMENT.is_deployed:
