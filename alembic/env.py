@@ -2,11 +2,13 @@ from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config, pool
 
+# TODO: this is needed for alembic to see models
 from alembic import context
 from src.config import settings
 from src.database import metadata
 
-# TODO:
+import src.users.models
+import src.auth.models
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
