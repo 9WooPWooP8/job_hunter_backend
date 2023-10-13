@@ -16,7 +16,7 @@ class TokenData(CustomModel):
     username: str | None = None
 
 
-class JWTData(CustomModel):
+class JWTClaims(CustomModel):
     user_id: int = Field(alias="sub")
 
 

@@ -11,5 +11,13 @@ class UserCreate(CustomModel):
     last_name: str
 
 
+class UserResponse(CustomModel):
+    id: int
+    username: constr(pattern="^[A-Za-z0-9-_]+$", to_lower=True, strip_whitespace=True)
+    email: str
+    first_name: str
+    last_name: str
+
+
 class TokenData(CustomModel):
     username: str | None = None

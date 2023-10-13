@@ -1,9 +1,8 @@
 from datetime import datetime
-from typing import Any
 from zoneinfo import ZoneInfo
 
 from fastapi.encoders import jsonable_encoder
-from pydantic import BaseModel, ConfigDict, model_validator
+from pydantic import BaseModel, ConfigDict
 
 
 def convert_datetime_to_gmt(dt: datetime) -> str:
@@ -19,16 +18,17 @@ class CustomModel(BaseModel):
         populate_by_name=True,
     )
 
-    @model_validator(mode="before")
-    @classmethod
-    def set_null_microseconds(cls, data: dict[str, Any]) -> dict[str, Any]:
-        datetime_fields = {
-            k: v.replace(microsecond=0)
-            for k, v in data.items()
-            if isinstance(k, datetime)
-        }
+    # @model_validator(mode="before")
+    # @classmethod
+    # def set_null_microseconds(cls, data: dict[str, Any]) -> dict[str, Any]:
+    #     print(data)
+    #     datetime_fields = {
+    #         k: v.replace(microsecond=0)
+    #         for k, v in data.items()
+    #         if isinstance(k, datetime)
+    #     }
 
-        return {**data, **datetime_fields}
+    #     return {**data, **datetime_fields}
 
     def serializable_dict(self, **kwargs):
         """Return a dict which contains only serializable fields."""

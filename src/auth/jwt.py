@@ -6,9 +6,10 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 
 from src.auth.config import auth_config
-from src.auth.schemas import JWTData
+from src.auth.exceptions import AuthRequired, InvalidToken
+from src.auth.schemas import JWTClaims
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/tokens", auto_error=False)
 
 DEFAULT_ACCESS_TOKEN_LIFETIME = timedelta(minutes=auth_config.JWT_EXP)
 
@@ -27,7 +28,7 @@ def create_access_token(
 
 async def parse_jwt_user_data_optional(
     token: str = Depends(oauth2_scheme),
-) -> JWTData | None:
+) -> JWTClaims | None:
     if not token:
         return None
 
@@ -36,15 +37,15 @@ async def parse_jwt_user_data_optional(
             token, auth_config.JWT_SECRET, algorithms=[auth_config.JWT_ALG]
         )
     except JWTError:
-        raise ValueError()  # TODO: Change to invalid token exception
+        raise InvalidToken()
 
-    return JWTData(**payload)
+    return JWTClaims(**payload)
 
 
 async def parse_jwt_user_data(
-    token: JWTData | None = Depends(parse_jwt_user_data_optional),
-) -> JWTData:
+    token: JWTClaims | None = Depends(parse_jwt_user_data_optional),
+) -> JWTClaims:
     if not token:
-        raise ValueError()  # TODO: Change to auth required exception
+        raise AuthRequired()
 
     return token
