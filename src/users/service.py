@@ -56,7 +56,6 @@ async def create_applicant(applicant: ApplicantCreate) -> dict[str, Any] | None:
     )
 
     applicant = await fetch_one(insert_query)
-    print(applicant)
 
     return applicant
 
