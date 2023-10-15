@@ -5,16 +5,9 @@ from fastapi import Cookie, Depends
 
 from src.auth import jwt
 from src.auth import service as auth_service
-from src.auth.exceptions import EmailTaken, RefreshTokenNotValid
-from src.auth.schemas import AuthData, JWTClaims
+from src.auth.exceptions import RefreshTokenNotValid
+from src.auth.schemas import JWTClaims
 from src.users import service as user_service
-
-
-async def valid_user_create(user: AuthData) -> AuthData:
-    if await user_service.get_user_by_email(user.username):
-        raise EmailTaken()
-
-    return user
 
 
 async def valid_refresh_token(
@@ -46,10 +39,9 @@ def _is_valid_refresh_token(db_refresh_token: dict[str, Any]) -> bool:
     return datetime.utcnow() <= db_refresh_token["expires_at"]
 
 
-async def user_authenticated(
+async def user_is_authenticated(
     jwt_claims: JWTClaims = Depends(jwt.parse_jwt_user_data),
 ) -> dict[str, any]:
-    print(jwt_claims)
     user = await user_service.get_user_by_id(jwt_claims.user_id)
 
     return user

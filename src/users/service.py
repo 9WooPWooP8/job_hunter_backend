@@ -26,6 +26,18 @@ async def get_user_by_email(email: str) -> dict[str, Any] | None:
     return await fetch_one(select_query)
 
 
+async def get_applicant_by_id(id: int) -> dict[str, Any] | None:
+    select_query = select(Applicant).where(Applicant.user_id == id)
+
+    return await fetch_one(select_query)
+
+
+async def get_recruiter_by_id(id: int) -> dict[str, Any] | None:
+    select_query = select(Recruiter).where(Recruiter.user_id == id)
+
+    return await fetch_one(select_query)
+
+
 async def create_base_user(user: UserCreate) -> dict[str, Any] | None:
     insert_query = (
         insert(User)
@@ -45,13 +57,14 @@ async def create_base_user(user: UserCreate) -> dict[str, Any] | None:
 
 
 async def create_applicant(applicant: ApplicantCreate) -> dict[str, Any] | None:
-    created_base_user = await create_base_user(user=applicant)
+    base_user = await get_user_by_email(applicant.email)
+
+    if not base_user:
+        base_user = await create_base_user(user=applicant)
 
     insert_query = (
         insert(Applicant)
-        .values(
-            {"user_id": created_base_user["id"], "status_id": applicant.status_id.value}
-        )
+        .values({"user_id": base_user["id"], "status_id": applicant.status_id.value})
         .returning(Applicant.user_id)
     )
 
@@ -61,11 +74,14 @@ async def create_applicant(applicant: ApplicantCreate) -> dict[str, Any] | None:
 
 
 async def create_recruiter(recruiter: RecruiterCreate) -> dict[str, Any] | None:
-    created_base_user = await create_base_user(user=recruiter)
+    base_user = await get_user_by_email(recruiter.email)
+
+    if not base_user:
+        base_user = await create_base_user(user=recruiter)
 
     insert_query = (
         insert(Recruiter)
-        .values({"user_id": created_base_user["id"]})
+        .values({"user_id": base_user["id"]})
         .returning(Recruiter.user_id)
     )
 

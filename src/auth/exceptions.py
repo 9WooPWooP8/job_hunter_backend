@@ -1,5 +1,5 @@
 from src.auth.constants import ErrorCode
-from src.exceptions import BadRequest, NotAuthenticated, PermissionDenied
+from src.exceptions import NotAuthenticated, PermissionDenied
 
 
 class AuthRequired(NotAuthenticated):
@@ -16,10 +16,6 @@ class InvalidToken(NotAuthenticated):
 
 class InvalidCredentials(NotAuthenticated):
     DETAIL = ErrorCode.INVALID_CREDENTIALS
-
-
-class EmailTaken(BadRequest):
-    DETAIL = ErrorCode.EMAIL_TAKEN
 
 
 class RefreshTokenNotValid(NotAuthenticated):

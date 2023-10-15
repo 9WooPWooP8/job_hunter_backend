@@ -8,7 +8,7 @@ from src import utils
 from src.auth.config import auth_config
 from src.auth.models import AuthRefreshToken
 from src.database import execute, fetch_one
-from src.users.service import get_user_by_username
+from src.users import service as user_service
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -22,11 +22,39 @@ def get_password_hash(password: str) -> str:
 
 
 async def authenticate_user(username: str, password: str) -> dict | bool:
-    user = await get_user_by_username(username)
+    user = await user_service.get_user_by_username(username)
     if not user:
         return False
 
     if not verify_password(password, user["password"]):
+        return False
+
+    return user
+
+
+async def authenticate_applicant(username: str, password: str) -> dict[str, any] | bool:
+    user = await authenticate_user(username, password)
+
+    if not user:
+        return False
+
+    applicant = await user_service.get_applicant_by_id(user["id"])
+
+    if not applicant:
+        return False
+
+    return user
+
+
+async def authenticate_recruiter(username: str, password: str) -> dict[str, any] | bool:
+    user = await authenticate_user(username, password)
+
+    if not user:
+        return False
+
+    recruiter = await user_service.get_recruiter_by_id(user["id"])
+
+    if not recruiter:
         return False
 
     return user
