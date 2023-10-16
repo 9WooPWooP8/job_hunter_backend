@@ -12,6 +12,7 @@ dnspython==2.4.2
 ecdsa==0.18.0
 email-validator==2.0.0.post2
 fastapi==0.103.2
+fastapi-restful==0.5.0
 filelock==3.12.4
 greenlet==3.0.0
 h11==0.14.0
@@ -20,10 +21,12 @@ identify==2.5.30
 idna==3.4
 Mako==1.2.4
 MarkupSafe==2.1.3
+mypy-extensions==1.0.0
 nodeenv==1.8.0
 passlib==1.7.4
 platformdirs==3.11.0
 pre-commit==3.4.0
+psutil==5.9.6
 psycopg2-binary==2.9.9
 pyasn1==0.5.0
 pycparser==2.21
@@ -37,8 +40,9 @@ PyYAML==6.0.1
 rsa==4.9
 six==1.16.0
 sniffio==1.3.0
-SQLAlchemy==2.0.21
+SQLAlchemy==2.0.22
 starlette==0.27.0
+typing-inspect==0.9.0
 typing_extensions==4.8.0
 uvicorn==0.23.2
 uvloop==0.17.0
