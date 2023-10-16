@@ -54,7 +54,7 @@ class Recruiter(Base):
     updated_at: Mapped[datetime | None] = mapped_column(onupdate=func.now())
 
     def __repr__(self):
-        return f"recruiters({self.id})"
+        return f"recruiters({self.user_id})"
 
 
 class ApplicantStatus(Base):

@@ -7,7 +7,7 @@ from sqlalchemy import (
     Select,
     Update,
 )
-from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
 
 from src.config import settings
@@ -19,19 +19,30 @@ engine = create_async_engine(DATABASE_URL)
 metadata = MetaData(naming_convention=DB_NAMING_CONVENTION)
 Base = declarative_base(metadata=metadata)
 
-
-async def fetch_one(select_query: Select | Insert | Update) -> dict[str, Any] | None:
-    async with engine.begin() as conn:
-        cursor: CursorResult = await conn.execute(select_query)
-        return cursor.first()._asdict() if cursor.rowcount > 0 else None
+session_maker = async_sessionmaker(engine, expire_on_commit=False)
 
 
-async def fetch_all(select_query: Select | Insert | Update) -> list[dict[str, Any]]:
-    async with engine.begin() as conn:
-        cursor: CursorResult = await conn.execute(select_query)
-        return [r._asdict() for r in cursor.all()]
+async def get_db():
+    try:
+        db_session = session_maker()
+        yield db_session
+    finally:
+        await db_session.close()
 
 
-async def execute(select_query: Insert | Update) -> None:
-    async with engine.begin() as conn:
-        await conn.execute(select_query)
+async def fetch_one(
+    session: AsyncSession, select_query: Select | Insert | Update
+) -> dict[str, Any] | None:
+    cursor: CursorResult = await session.execute(select_query)
+    return cursor.scalars().one_or_none()
+
+
+async def fetch_all(
+    session: AsyncSession, select_query: Select | Insert | Update
+) -> list[dict[str, Any]]:
+    cursor: CursorResult = await session.execute(select_query)
+    return cursor.all()
+
+
+async def execute(session: AsyncSession, select_query: Insert | Update) -> None:
+    await session.execute(select_query)

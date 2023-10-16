@@ -1,0 +1,115 @@
+from typing import Any
+
+from sqlalchemy import insert, select, update
+
+from src.auth import service as auth_service
+from src.database import fetch_one
+from src.users.models import Applicant, Recruiter, User
+from src.users.schemas import (
+    ApplicantCreate,
+    RecruiterCreate,
+    RecruiterUpdate,
+    UserCreate,
+)
+
+
+async def get_user_by_username(username: str) -> dict[str, Any] | None:
+    select_query = select(User).where(User.username == username)
+
+    return await fetch_one(select_query)
+
+
+async def get_user_by_id(id: int) -> dict[str, Any] | None:
+    select_query = select(User).where(User.id == id)
+
+    return await fetch_one(select_query)
+
+
+async def get_user_by_email(email: str) -> dict[str, Any] | None:
+    select_query = select(User).where(User.email == email)
+
+    return await fetch_one(select_query)
+
+
+async def get_applicant_by_id(id: int) -> dict[str, Any] | None:
+    select_query = select(Applicant).where(Applicant.user_id == id)
+
+    return await fetch_one(select_query)
+
+
+async def get_recruiter_by_id(id: int) -> dict[str, Any] | None:
+    select_query = select(Recruiter).where(Recruiter.user_id == id)
+
+    return await fetch_one(select_query)
+
+
+async def create_base_user(user: UserCreate) -> dict[str, Any] | None:
+    insert_query = (
+        insert(User)
+        .values(
+            {
+                "email": user.email,
+                "password": auth_service.get_password_hash(user.password),
+                "username": user.username,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+            }
+        )
+        .returning(User)
+    )
+
+    return await fetch_one(insert_query)
+
+
+async def create_applicant(applicant: ApplicantCreate) -> dict[str, Any] | None:
+    base_user = await get_user_by_email(applicant.email)
+
+    if not base_user:
+        base_user = await create_base_user(user=applicant)
+
+    insert_query = (
+        insert(Applicant)
+        .values({"user_id": base_user["id"], "status_id": applicant.status_id.value})
+        .returning(Applicant.user_id)
+    )
+
+    applicant = await fetch_one(insert_query)
+
+    return applicant
+
+
+async def create_recruiter(recruiter: RecruiterCreate) -> dict[str, Any] | None:
+    base_user = await get_user_by_email(recruiter.email)
+
+    if not base_user:
+        base_user = await create_base_user(user=recruiter)
+
+    insert_query = (
+        insert(Recruiter)
+        .values({"user_id": base_user["id"]})
+        .returning(Recruiter.user_id)
+    )
+
+    recruiter = await fetch_one(insert_query)
+
+    return recruiter
+
+
+async def update_recruiter(
+    recruiter_id: int, recruiter: RecruiterUpdate
+) -> dict[str, Any] | None:
+    insert_query = (
+        update(User)
+        .values({"first_name": recruiter.first_name, "last_name": recruiter.last_name})
+        .where({"id": recruiter_id})
+    )
+
+    await fetch_one(insert_query)
+
+    recruiter = await fetch_one(
+        select(Recruiter).join(User).filter(user_id=recruiter_id)
+    )
+
+    print(recruiter)
+
+    return recruiter

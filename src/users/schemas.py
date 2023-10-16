@@ -40,6 +40,17 @@ class ApplicantCreate(UserCreate):
     status_id: ApplicantStatus
 
 
+class ApplicantUpdate(CustomModel):
+    first_name: str
+    last_name: str
+    status_id: ApplicantStatus
+
+
+class RecruiterUpdate(CustomModel):
+    first_name: str
+    last_name: str
+
+
 class ApplicantCreateResponse(CustomModel):
     user_id: int
 
@@ -48,8 +59,16 @@ class RecruiterCreate(UserCreate):
     pass
 
 
+class UserResponse(CustomModel):
+    username: str
+    email: EmailStr
+    first_name: str
+    last_name: str
+
+
 class RecruiterCreateResponse(CustomModel):
     user_id: int
+    user: UserResponse
 
 
 class UserResponse(CustomModel):
