@@ -1,13 +1,9 @@
-from typing import Any
+from typing import Annotated, Any
 
-from sqlalchemy import (
-    CursorResult,
-    Insert,
-    MetaData,
-    Select,
-    Update,
-)
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from fastapi import Depends
+from sqlalchemy import CursorResult, Insert, MetaData, Select, Update
+from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
+                                    create_async_engine)
 from sqlalchemy.ext.declarative import declarative_base
 
 from src.config import settings
@@ -28,6 +24,9 @@ async def get_db():
         yield db_session
     finally:
         await db_session.close()
+
+
+GetDB = Annotated[AsyncSession, get_db]
 
 
 async def fetch_one(

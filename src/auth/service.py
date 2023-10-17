@@ -1,39 +1,41 @@
+from __future__ import annotations
+
 from datetime import datetime, timedelta
 from typing import Annotated
 
 from fastapi import Depends
-from passlib.context import CryptContext
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
+import src.users.service
 from src import utils
 from src.auth.config import auth_config
 from src.auth.models import AuthRefreshToken
+from src.auth.passwords import verify_password
 from src.database import fetch_one, get_db
-from src.users import service as user_service
 from src.users.models import Applicant, Recruiter, User
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class AuthService:
-    db: Session
+    db: AsyncSession
+    user_service: src.users.service.UserService
 
-    def __init__(self, db: Annotated[Session, Depends(get_db)]):
+    def __init__(
+        self,
+        db: Annotated[AsyncSession, Depends(get_db)],
+        user_service: Annotated[
+            src.users.service.UserService, Depends(src.users.service.get_user_service)
+        ],
+    ):
         self.db = db
-
-    def verify_password(self, plain_password: str, hashed_password: str) -> bool:
-        return pwd_context.verify(plain_password, hashed_password)
-
-    def get_password_hash(self, password: str) -> str:
-        return pwd_context.hash(password)
+        self.user_service = user_service
 
     async def authenticate_user(self, username: str, password: str) -> User | bool:
-        user = await user_service.get_user_by_username(username)
+        user = await self.user_service.get_user_by_username(username)
         if not user:
             return False
 
-        if not self.verify_password(password, user.password):
+        if not verify_password(password, user.password):
             return False
 
         return user
@@ -46,12 +48,12 @@ class AuthService:
         if not user:
             return False
 
-        applicant = await user_service.get_applicant_by_id(user.id)
+        applicant = await self.user_service.get_applicant_by_id(user.id)
 
         if not applicant:
             return False
 
-        return user
+        return applicant
 
     async def authenticate_recruiter(
         self, username: str, password: str
@@ -61,12 +63,12 @@ class AuthService:
         if not user:
             return False
 
-        recruiter = await user_service.get_recruiter_by_id(user.id)
+        recruiter = await self.user_service.get_recruiter_by_id(user.id)
 
         if not recruiter:
             return False
 
-        return user
+        return recruiter
 
     async def create_refresh_token(
         self, *, user_id: int, refresh_token: str | None = None
@@ -104,3 +106,12 @@ class AuthService:
         )
 
         return await fetch_one(self.db, select_query)
+
+
+def get_auth_service(
+    db: Annotated[AsyncSession, Depends(get_db)],
+    user_service: Annotated[
+        src.users.service.UserService, Depends(src.users.service.get_user_service)
+    ],
+):
+    return AuthService(db, user_service)

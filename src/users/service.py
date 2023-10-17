@@ -1,24 +1,26 @@
+from __future__ import annotations
+
 from typing import Annotated
 
 from fastapi import Depends
 from sqlalchemy import select, update
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.auth import service as auth_service
-from src.database import execute, fetch_one, get_db
+import src.auth.service
+from src.auth.passwords import get_password_hash
+from src.database import GetDB, execute, fetch_one, get_db
 from src.users.models import Applicant, Recruiter, User
-from src.users.schemas import (
-    ApplicantCreate,
-    RecruiterCreate,
-    RecruiterUpdate,
-    UserCreate,
-)
+from src.users.schemas import (ApplicantCreate, RecruiterCreate,
+                               RecruiterUpdate, UserCreate)
 
 
 class UserService:
-    db: Session
+    db: AsyncSession
 
-    def __init__(self, db: Annotated[Session, Depends(get_db)]):
+    def __init__(
+        self,
+        db: Annotated[AsyncSession, Depends(get_db)],
+    ):
         self.db = db
 
     async def get_user_by_username(self, username: str) -> User | None:
@@ -49,7 +51,7 @@ class UserService:
     async def create_base_user(self, user: UserCreate) -> User:
         user = User(
             email=user.email,
-            password=auth_service.get_password_hash(user.password),
+            password=get_password_hash(user.password),
             username=user.username,
             first_name=user.first_name,
             last_name=user.last_name,
@@ -113,3 +115,10 @@ class UserService:
         recruiter = await fetch_one(fetch_result)
 
         return recruiter
+
+
+# TODO:
+def get_user_service(
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    return UserService(db)
