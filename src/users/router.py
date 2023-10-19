@@ -39,14 +39,15 @@ class UsersCBV:
     ) -> ApplicantCreateResponse:
         return await self._user_service.create_applicant(applicant_data)
 
-    @router.put("/applicants", response_model=ApplicantCreateResponse)
+    @router.put("/applicants/{id}", response_model=ApplicantCreateResponse)
     async def update_applicant(
         self,
+        id: int,
         applicant_data: ApplicantUpdate,
     ) -> ApplicantCreateResponse:
-        return await self._user_service.create_applicant(applicant_data)
+        return await self._user_service.update_applicant(id, applicant_data)
 
-    @router.put("/recruiters/{id}", response_model=dict)
+    @router.put("/recruiters/{id}", response_model=RecruiterCreateResponse)
     async def update_recruiter(
         self,
         id: int,

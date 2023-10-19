@@ -8,6 +8,7 @@ from jose import JWTError, jwt
 from src.auth.config import auth_config
 from src.auth.exceptions import AuthRequired, InvalidToken
 from src.auth.schemas import JWTClaims
+from src.users.models import Applicant, Recruiter
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/tokens", auto_error=False)
 
@@ -15,9 +16,10 @@ DEFAULT_ACCESS_TOKEN_LIFETIME = timedelta(minutes=auth_config.JWT_EXP)
 
 
 def create_access_token(
-    user: dict[str, Any], expires_delta: timedelta = DEFAULT_ACCESS_TOKEN_LIFETIME
+    user: Applicant | Recruiter,
+    expires_delta: timedelta = DEFAULT_ACCESS_TOKEN_LIFETIME,
 ):
-    jwt_claims = {"sub": str(user["id"]), "exp": datetime.utcnow() + expires_delta}
+    jwt_claims = {"sub": str(user.user_id), "exp": datetime.utcnow() + expires_delta}
 
     encoded_jwt = jwt.encode(
         jwt_claims, auth_config.JWT_SECRET, algorithm=auth_config.JWT_ALG

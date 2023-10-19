@@ -36,6 +36,14 @@ class UserCreate(CustomModel):
         return password
 
 
+class UserResponse(CustomModel):
+    id: int
+    username: str
+    email: str
+    first_name: str
+    last_name: str
+
+
 class ApplicantCreate(UserCreate):
     status_id: ApplicantStatus
 
@@ -53,6 +61,8 @@ class RecruiterUpdate(CustomModel):
 
 class ApplicantCreateResponse(CustomModel):
     user_id: int
+    status_id: int
+    user: UserResponse
 
 
 class RecruiterCreate(UserCreate):
@@ -69,14 +79,6 @@ class UserResponse(CustomModel):
 class RecruiterCreateResponse(CustomModel):
     user_id: int
     user: UserResponse
-
-
-class UserResponse(CustomModel):
-    id: int
-    username: str
-    email: str
-    first_name: str
-    last_name: str
 
 
 class TokenData(CustomModel):

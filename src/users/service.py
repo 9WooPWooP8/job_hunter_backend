@@ -11,7 +11,7 @@ from src.auth.passwords import get_password_hash
 from src.database import GetDB, execute, fetch_one, get_db
 from src.users.models import Applicant, Recruiter, User
 from src.users.schemas import (ApplicantCreate, RecruiterCreate,
-                               RecruiterUpdate, UserCreate)
+                               RecruiterUpdate, UserCreate, ApplicantUpdate)
 
 
 class UserService:
@@ -69,7 +69,7 @@ class UserService:
         if not base_user:
             base_user = await self.create_base_user(user=applicant)
 
-        applicant = Applicant(user_id=base_user.id, status_id=applicant.status_id)
+        applicant = Applicant(user_id=base_user.id, status_id=applicant.status_id.value)
 
         self.db.add(applicant)
         await self.db.commit()
@@ -96,25 +96,27 @@ class UserService:
     async def update_recruiter(
         self, recruiter_id: int, recruiter: RecruiterUpdate
     ) -> Recruiter:
-        insert_query = (
-            update(User)
-            .values(
-                {"first_name": recruiter.first_name, "last_name": recruiter.last_name}
-            )
-            .where(User.id == recruiter_id)
-        )
+        recruiter_db = await self.get_recruiter_by_id(recruiter_id)
 
-        await execute(insert_query)
+        recruiter_db.user.first_name = recruiter.first_name
+        recruiter_db.user.last_name = recruiter.last_name
 
-        fetch_result = (
-            select(Recruiter, User)
-            .join(User, full=True)
-            .filter(Recruiter.user_id == recruiter_id)
-        )
+        await self.db.commit()
 
-        recruiter = await fetch_one(fetch_result)
+        return recruiter_db
 
-        return recruiter
+    async def update_applicant(
+        self, applicant_id: int, applicant: ApplicantUpdate
+    ) -> Applicant:
+        applicant_db = await self.get_applicant_by_id(applicant_id)
+
+        applicant_db.user.first_name = applicant.first_name
+        applicant_db.user.last_name = applicant.last_name
+        applicant_db.status_id = applicant.status_id.value
+
+        await self.db.commit()
+
+        return applicant_db
 
 
 # TODO:
