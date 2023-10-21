@@ -30,7 +30,7 @@ class AuthService:
         self.db = db
         self.user_service = user_service
 
-    async def authenticate_user(self, username: str, password: str) -> User | bool:
+    async def authenticate_user(self, username: str, password: str) -> User | False:
         user = await self.user_service.get_user_by_username(username)
         if not user:
             return False
@@ -42,7 +42,7 @@ class AuthService:
 
     async def authenticate_applicant(
         self, username: str, password: str
-    ) -> Applicant | bool:
+    ) -> Applicant | False:
         user = await self.authenticate_user(username, password)
 
         if not user:

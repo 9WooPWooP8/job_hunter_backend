@@ -64,11 +64,11 @@ class AuthCBV:
         user: dict[str, Any] = Depends(valid_refresh_token_user),
     ) -> AuthTokens:
         refresh_token_value = await self._auth_service.create_refresh_token(
-            user_id=refresh_token["user_id"]
+            user_id=refresh_token.user_id
         )
         response.set_cookie(**utils.get_refresh_token_settings(refresh_token_value))
 
-        worker.add_task(self._auth_service.expire_refresh_token, refresh_token["id"])
+        worker.add_task(self._auth_service.expire_refresh_token, refresh_token.id)
 
         access_token = jwt.create_access_token(user=user)
 

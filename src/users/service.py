@@ -3,15 +3,19 @@ from __future__ import annotations
 from typing import Annotated
 
 from fastapi import Depends
-from sqlalchemy import select, update
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-import src.auth.service
 from src.auth.passwords import get_password_hash
-from src.database import GetDB, execute, fetch_one, get_db
+from src.database import fetch_one, get_db
 from src.users.models import Applicant, Recruiter, User
-from src.users.schemas import (ApplicantCreate, RecruiterCreate,
-                               RecruiterUpdate, UserCreate, ApplicantUpdate)
+from src.users.schemas import (
+    ApplicantCreate,
+    ApplicantUpdate,
+    RecruiterCreate,
+    RecruiterUpdate,
+    UserCreate,
+)
 
 
 class UserService:

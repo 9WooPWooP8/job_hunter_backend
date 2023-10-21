@@ -20,3 +20,11 @@ class InvalidCredentials(NotAuthenticated):
 
 class RefreshTokenNotValid(NotAuthenticated):
     DETAIL = ErrorCode.REFRESH_TOKEN_NOT_VALID
+
+
+class ApplicantNotAuthenticated(NotAuthenticated):
+    DETAIL = ErrorCode.APPLICANT_NOT_AUTHENTICATED
+
+
+class RecruiterNotAuthenticated(NotAuthenticated):
+    DETAIL = ErrorCode.RECRUITER_NOT_AUTHENTICATED

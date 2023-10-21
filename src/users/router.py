@@ -4,13 +4,18 @@ from fastapi import APIRouter, Depends
 from fastapi_restful.cbv import cbv
 
 import src.users.service as user_service
-from src.auth.dependencies import user_is_authenticated
-from src.users.dependencies import (valid_applicant_create,
-                                    valid_recruiter_create)
-from src.users.schemas import (ApplicantCreate, ApplicantCreateResponse,
-                               ApplicantUpdate, RecruiterCreate,
-                               RecruiterCreateResponse, RecruiterUpdate,
-                               UserResponse)
+from src.auth.dependencies import applicant_is_authenticated, recruiter_is_authenticated
+from src.users.dependencies import valid_applicant_create, valid_recruiter_create
+from src.users.models import Applicant, Recruiter
+from src.users.schemas import (
+    ApplicantCreate,
+    ApplicantCreateResponse,
+    ApplicantUpdate,
+    RecruiterCreate,
+    RecruiterCreateResponse,
+    RecruiterUpdate,
+    UserResponse,
+)
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -19,9 +24,15 @@ router = APIRouter(prefix="/users", tags=["users"])
 class UsersCBV:
     _user_service: user_service.UserService = Depends(user_service.get_user_service)
 
-    @router.get("/me", response_model=UserResponse)
-    async def get_my_account(
-        self, user: dict[str, any] = Depends(user_is_authenticated)
+    @router.get("/recruiters/me", response_model=RecruiterCreateResponse)
+    async def get_my_recruiter_account(
+        self, user: Recruiter | None = Depends(recruiter_is_authenticated)
+    ) -> UserResponse:
+        return user
+
+    @router.get("/applicants/me", response_model=ApplicantCreateResponse)
+    async def get_my_applicant_account(
+        self, user: Applicant | None = Depends(applicant_is_authenticated)
     ) -> UserResponse:
         return user
 
