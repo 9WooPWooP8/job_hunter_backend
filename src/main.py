@@ -20,5 +20,4 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(users_router)
 
-app.add_route("/graphql", graphql_app)
-app.add_websocket_route("/graphql", graphql_app)
+app.include_router(graphql_app, prefix="/graphql")
