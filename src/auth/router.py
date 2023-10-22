@@ -26,7 +26,7 @@ class AuthCBV:
         refresh_token_value = await self._auth_service.create_refresh_token(
             user_id=recruiter.user_id
         )
-        access_token = jwt.create_access_token(user=recruiter)
+        access_token = jwt.create_access_token(user=recruiter.user)
 
         response.set_cookie(**utils.get_refresh_token_settings(refresh_token_value))
 
@@ -46,7 +46,7 @@ class AuthCBV:
         refresh_token_value = await self._auth_service.create_refresh_token(
             user_id=applicant.user_id
         )
-        access_token = jwt.create_access_token(user=applicant)
+        access_token = jwt.create_access_token(user=applicant.user)
 
         response.set_cookie(**utils.get_refresh_token_settings(refresh_token_value))
 
