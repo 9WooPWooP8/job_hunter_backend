@@ -85,7 +85,7 @@ class AuthService:
         self.db.add(new_refresh_token)
         await self.db.commit()
 
-        self.db.refresh(new_refresh_token)
+        await self.db.refresh(new_refresh_token)
 
         return new_refresh_token.refresh_token
 
