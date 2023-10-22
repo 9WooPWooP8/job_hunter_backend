@@ -6,6 +6,7 @@ from fastapi_restful.cbv import cbv
 import src.auth.service as auth_service
 from src.auth import jwt, utils
 from src.auth.dependencies import valid_refresh_token, valid_refresh_token_user
+from src.auth.exceptions import ApplicantNotExists, RecruiterNotExists
 from src.auth.schemas import AuthData, AuthTokens
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -22,6 +23,9 @@ class AuthCBV:
         recruiter = await self._auth_service.authenticate_recruiter(
             auth_data.username, auth_data.password
         )
+
+        if not recruiter:
+            raise RecruiterNotExists
 
         refresh_token_value = await self._auth_service.create_refresh_token(
             user_id=recruiter.user_id
@@ -42,6 +46,9 @@ class AuthCBV:
         applicant = await self._auth_service.authenticate_applicant(
             auth_data.username, auth_data.password
         )
+
+        if not applicant:
+            raise ApplicantNotExists
 
         refresh_token_value = await self._auth_service.create_refresh_token(
             user_id=applicant.user_id

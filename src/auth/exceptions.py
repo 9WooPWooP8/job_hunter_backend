@@ -28,3 +28,11 @@ class ApplicantNotAuthenticated(NotAuthenticated):
 
 class RecruiterNotAuthenticated(NotAuthenticated):
     DETAIL = ErrorCode.RECRUITER_NOT_AUTHENTICATED
+
+
+class ApplicantNotExists(PermissionDenied):
+    DETAIL = ErrorCode.APPLICANT_NOT_EXISTS
+
+
+class RecruiterNotExists(NotAuthenticated):
+    DETAIL = ErrorCode.RECRUITER_NOT_EXISTS

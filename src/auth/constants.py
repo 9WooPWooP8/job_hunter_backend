@@ -7,3 +7,5 @@ class ErrorCode:
     REFRESH_TOKEN_REQUIRED = "Refresh token is required either in the body or cookie."
     APPLICANT_NOT_AUTHENTICATED = "Applicant does not exist."
     RECRUITER_NOT_AUTHENTICATED = "Recruiter does not exist."
+    APPLICANT_NOT_EXISTS = "Applicant does not exist."
+    RECRUITER_NOT_EXISTS = "Recruiter does not exist."
