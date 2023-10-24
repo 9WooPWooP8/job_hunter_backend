@@ -7,6 +7,7 @@ import src.auth.service as auth_service
 from src.auth import jwt, utils
 from src.auth.dependencies import valid_refresh_token, valid_refresh_token_user
 from src.auth.exceptions import ApplicantNotExists, RecruiterNotExists
+from src.auth.models import AuthRefreshToken
 from src.auth.schemas import AuthData, AuthTokens
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -88,12 +89,12 @@ class AuthCBV:
     async def logout_user(
         self,
         response: Response,
-        refresh_token: dict[str, Any] = Depends(valid_refresh_token),
+        refresh_token: AuthRefreshToken = Depends(valid_refresh_token),
     ) -> None:
-        await self._auth_service.expire_refresh_token(refresh_token["id"])
+        await self._auth_service.expire_refresh_token(refresh_token.id)
 
         response.delete_cookie(
             **utils.get_refresh_token_settings(
-                refresh_token["refresh_token"], expired=True
+                refresh_token.refresh_token, expired=True
             )
         )
