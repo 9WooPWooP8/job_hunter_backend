@@ -3,7 +3,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from src.auth.router import router as auth_router
 from src.config import app_configs, settings
-from src.graphql import graphql_app
+from src.graphql.graphql import graphql_app
 from src.users.router import router as users_router
 
 app = FastAPI(**app_configs)

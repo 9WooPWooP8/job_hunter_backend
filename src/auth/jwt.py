@@ -50,3 +50,17 @@ async def parse_jwt_user_data(
         raise AuthRequired()
 
     return token
+
+
+def parse_jwt_access_token(token: str = None) -> JWTClaims | None:
+    if not token:
+        return None
+
+    try:
+        payload = jwt.decode(
+            token, auth_config.JWT_SECRET, algorithms=[auth_config.JWT_ALG]
+        )
+    except JWTError:
+        return None
+
+    return JWTClaims(**payload)

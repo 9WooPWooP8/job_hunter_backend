@@ -126,5 +126,5 @@ class UserService:
 # TODO:
 def get_user_service(
     db: Annotated[AsyncSession, Depends(get_db)],
-):
+) -> UserService:
     return UserService(db)

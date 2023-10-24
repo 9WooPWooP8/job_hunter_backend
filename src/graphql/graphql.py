@@ -1,21 +1,8 @@
-from typing import Annotated
-
 import strawberry
-from fastapi import Depends
-from strawberry.fastapi import BaseContext, GraphQLRouter
+from strawberry.fastapi import GraphQLRouter
 
-from src.users.service import UserService, get_user_service
-
-
-class GrpahQLContext(BaseContext):
-    def __init__(self, user_service: Annotated[UserService, Depends(get_user_service)]):
-        self.user_service = user_service
-
-
-async def get_context(
-    custom_context=Depends(GrpahQLContext),
-):
-    return custom_context
+from src.graphql.context import Info, get_context
+from src.graphql.permissions import IsApplicant, IsRecruiter
 
 
 @strawberry.type
@@ -52,15 +39,15 @@ class Query:
     @strawberry.field
     def user(
         self,
-        info,
+        info: Info,
         id: int,
     ) -> User | None:
         return info.context.user_service.get_user_by_id(id)
 
-    @strawberry.field
+    @strawberry.field(permission_classes=[IsRecruiter, IsApplicant])
     def applicant(
         self,
-        info,
+        info: Info,
         id: int,
     ) -> Applicant | None:
         return info.context.user_service.get_applicant_by_id(id)
@@ -68,7 +55,7 @@ class Query:
     @strawberry.field
     def recruiter(
         self,
-        info,
+        info: Info,
         id: int,
     ) -> Recruiter | None:
         return info.context.user_service.get_recruiter_by_id(id)
