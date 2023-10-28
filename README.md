@@ -19,3 +19,10 @@ alembic revision --autogenerate -m "migration comment"
 
 apply migrations:
 alembic upgrade head
+
+-----------------------
+Docker compose
+
+cp .env.example .env
+
+docker compose up
