@@ -9,6 +9,7 @@ from src.database import metadata
 
 import src.users.models
 import src.auth.models
+import src.companies.models
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
