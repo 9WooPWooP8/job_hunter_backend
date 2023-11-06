@@ -56,6 +56,9 @@ class Recruiter(Base):
     companies: Mapped[list["Company"]] = relationship(
         back_populates="owner"
     )
+    vacancies: Mapped[list["Vacancy"]] = relationship(
+        back_populates="company"
+    )    
 
     def __repr__(self):
         return f"recruiters({self.user_id})"

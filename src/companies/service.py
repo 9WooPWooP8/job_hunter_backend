@@ -10,9 +10,9 @@ from src.auth.passwords import get_password_hash
 from src.database import fetch_one, fetch_all, get_db
 from src.companies.models import Company
 from src.companies.schemas import (
-    CompanyResponse,
     CompanyRequest
 )
+from src.users.models import Recruiter
 
 
 class CompanyService:
@@ -34,10 +34,10 @@ class CompanyService:
 
         return await fetch_one(self.db, select_query)    
 
-    async def create_company(self, company: CompanyRequest) -> Company:
+    async def create_company(self, company: CompanyRequest, user: Recruiter) -> Company:
         db_company = Company(
             name = company.name,
-            owner_id = company.owner_id,
+            owner_id = user.user_id,
             description = company.description
         )
         self.db.add(db_company)
