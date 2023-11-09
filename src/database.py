@@ -1,9 +1,7 @@
 from typing import Annotated, Any
 
-from fastapi import Depends
 from sqlalchemy import CursorResult, Insert, MetaData, Select, Update
-from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
-                                    create_async_engine)
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
 
 from src.config import settings
