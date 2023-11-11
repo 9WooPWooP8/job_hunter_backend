@@ -6,8 +6,6 @@ python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 
-baza v dokere!!!!
-
 docker run -p 5432:5432 -e POSTGRES PASSWORD="postgres" -e POSTGRES DB="jobhunter" postgres
 
 cp .env.example .env
