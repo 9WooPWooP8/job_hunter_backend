@@ -16,7 +16,7 @@ class CompaniesCBV:
     )
 
     @router.get("/", response_model=list[CompanyResponse])
-    async def get_all(self) -> CompanyResponse:
+    async def get_all(self) -> list[CompanyResponse]:
         return await self._company_service.get_all()
 
     @router.get("/{id}", response_model=CompanyResponse)

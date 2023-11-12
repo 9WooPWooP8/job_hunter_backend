@@ -32,7 +32,7 @@ class VacanciesCBV:
         vacancy_data: VacancyRequest,
         user: Recruiter | None = Depends(recruiter_is_authenticated),
     ) -> list[VacancyResponse]:
-        return await self._vacancy_service.create_vacancy(vacancy_data, user)
+        return await self._vacancy_service.create_vacancy(vacancy_data)
 
     @router.put("/{id}", response_model=VacancyResponse)
     async def update_vacancy(

@@ -35,7 +35,7 @@ class VacancyService:
         db_vacancy = Vacancy(
             description=vacancy.description,
             company_id=vacancy.company_id,
-            status_id=VacancyStatus.ACTIVE,
+            status_id=VacancyStatus.ACTIVE.value,
         )
         self.db.add(db_vacancy)
         await self.db.commit()
@@ -47,7 +47,7 @@ class VacancyService:
     async def disable_vacancy(self, vacancy_id: int) -> Vacancy:
         db_vacancy = await self.get_by_id(vacancy_id)
 
-        db_vacancy.status_id = VacancyStatus.NOT_ACTIVE
+        db_vacancy.status_id = VacancyStatus.NOT_ACTIVE.value
 
         await self.db.commit()
 
@@ -56,7 +56,7 @@ class VacancyService:
     async def activate_vacancy(self, vacancy_id: int) -> Vacancy:
         db_vacancy = await self.get_by_id(vacancy_id)
 
-        db_vacancy.status_id = VacancyStatus.ACTIVE
+        db_vacancy.status_id = VacancyStatus.ACTIVE.value
 
         await self.db.commit()
 
