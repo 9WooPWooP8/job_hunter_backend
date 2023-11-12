@@ -23,7 +23,7 @@ class CompanyService:
 
     async def get_all(self) -> list[Company] | None:
         select_query = select(Company)
-
+        print(await fetch_all(self.db, select_query))
         return await fetch_all(self.db, select_query)
 
     async def get_by_id(self, id) -> Company | None:

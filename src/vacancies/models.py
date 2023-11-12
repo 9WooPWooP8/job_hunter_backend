@@ -10,7 +10,7 @@ class Vacancy(Base):
     __tablename__ = "vacancies"
 
     id: Mapped[int] = mapped_column(Identity(), primary_key=True)
-    company_id: Mapped[int] = mapped_column(ForeignKey("recruiters.user_id"))
+    company_id: Mapped[int] = mapped_column(ForeignKey("companies.id"))
     status_id: Mapped[int]
     description: Mapped[str]
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())

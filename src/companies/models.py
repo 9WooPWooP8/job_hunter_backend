@@ -4,6 +4,7 @@ from sqlalchemy import ForeignKey, Identity, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.database import Base
+from src.vacancies.models import Vacancy
 
 
 class Company(Base):
@@ -17,6 +18,7 @@ class Company(Base):
     owner: Mapped["Recruiter"] = relationship(
         back_populates="companies", lazy="selectin"
     )
+    vacancies: Mapped[list[Vacancy]] = relationship(back_populates="company")
 
     def __repr__(self):
         return f"company ({self.id}) {self.name} {self.description}"
