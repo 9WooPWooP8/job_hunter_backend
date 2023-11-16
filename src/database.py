@@ -38,7 +38,7 @@ async def fetch_all(
     session: AsyncSession, select_query: Select | Insert | Update
 ) -> list[dict[str, Any]]:
     cursor: CursorResult = await session.execute(select_query)
-    return cursor.all()
+    return cursor.scalars().all()
 
 
 async def execute(session: AsyncSession, select_query: Insert | Update) -> None:
