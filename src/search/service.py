@@ -12,6 +12,8 @@ from src.companies.models import Company
 from src.companies.schemas import CompanyRequest
 from src.database import fetch_one, fetch_all, get_db
 from src.search.schemas import CompaniesFilterSearchRequest
+from src.vacancies.models import Vacancy
+from src.vacancies.schemas import VacancyRequest
 
 class SearchService:
     db: AsyncSession
@@ -37,6 +39,19 @@ class SearchService:
                                                   Company.description.like(company_name_description)))\
                                         .offset(pagination["start"])\
                                         .limit(pagination["end"])
+        return await fetch_all(self.db, select_query)
+    
+    async def find_vacancies(self, filter: VacancyRequest, limit, page) -> list[Vacancy] | None:
+        pagination = self.calculate_pagination(limit, page)
+
+        # vacancies_name_search = "%{}%".format(filter.name)
+        vacancies_name_description = "%{}%".format(filter.description)
+
+        select_query = select(Vacancy).filter(or_(Vacancy.description.like(vacancies_name_description),
+                                                  Vacancy.company_id == filter.company_id))\
+                                        .offset(pagination["start"])\
+                                        .limit(pagination["end"])
+        
         return await fetch_all(self.db, select_query)
 
 def get_search_service(
