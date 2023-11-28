@@ -8,6 +8,7 @@ from src.users.router import router as users_router
 from src.vacancies.router import router as vacancies_router
 from src.companies.router import router as companies_router
 from src.search.router import router as search_router
+from src.resumes.router import router as resumes_router
 
 app = FastAPI(**app_configs)
 
@@ -25,3 +26,4 @@ app.include_router(users_router)
 app.include_router(companies_router)
 app.include_router(vacancies_router)
 app.include_router(search_router)
+app.include_router(resumes_router)
