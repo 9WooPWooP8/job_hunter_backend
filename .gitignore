@@ -2,3 +2,4 @@ venv
 .ruff_cache
 .env
 __pycache__
+scripts/start-dev.sh
