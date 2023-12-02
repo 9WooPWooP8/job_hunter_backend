@@ -12,7 +12,9 @@ resume_personal_quality = Table(
     Column("personal_quality_id", Integer, ForeignKey("personal_qualities.id"), primary_key=True)
 )
 
+
 class Resume(Base):
+    __mapper_args__ = {"eager_defaults": True}
     __tablename__ = 'resumes'
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -23,20 +25,24 @@ class Resume(Base):
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
     contacts: Mapped[list["ResumeContact"]] = relationship(
-        back_populates="resume")
+        back_populates="resume",
+        cascade="all, delete", lazy="selectin")
 
     applicant: Mapped[list["Applicant"]] = relationship(
-        back_populates="resumes")
+        back_populates="resumes", lazy="selectin")
 
     employment_records: Mapped[list["EmploymentRecord"]] = relationship(
-        back_populates="resume")
+        back_populates="resume",
+        cascade="all, delete", lazy="selectin")
 
     personal_qualities: Mapped[list["PersonalQuality"]] = relationship(
         secondary=resume_personal_quality,
-        back_populates="resumes")
+        back_populates="resumes", lazy="selectin")
 
     educations: Mapped[list["ResumeEducation"]] = relationship(
-        back_populates="resume")
+        back_populates="resume",
+        cascade="all, delete", lazy="selectin")
+
 
 class PersonalQuality(Base):
     __tablename__ = "personal_qualities"
@@ -49,7 +55,7 @@ class PersonalQuality(Base):
         back_populates="personal_qualities"
     )
 
-# organisation string
+
 class EmploymentRecord(Base):
     __tablename__ = "employment_records"
 
@@ -65,7 +71,9 @@ class EmploymentRecord(Base):
         back_populates="employment_records"
     )
 
+
 class Education(Base):
+    __mapper_args__ = {"eager_defaults": True}
     __tablename__ = "educations"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -73,6 +81,7 @@ class Education(Base):
 
     resumes: Mapped[list["ResumeEducation"]] = relationship(
         back_populates="education")
+
 
 class Contact(Base):
     __tablename__ = "contacts"
@@ -82,6 +91,7 @@ class Contact(Base):
 
     resumes: Mapped[list["ResumeContact"]] = relationship(
         back_populates="contact")
+
 
 class ResumeContact(Base):
     __tablename__ = "resume_contact"
@@ -93,39 +103,14 @@ class ResumeContact(Base):
     contact: Mapped["Contact"] = relationship(back_populates="resumes")
     resume: Mapped["Resume"] = relationship(back_populates="contacts")
 
+
 class ResumeEducation(Base):
+    __mapper_args__ = {"eager_defaults": True}
     __tablename__ = "resume_education"
     resume_id: Mapped[int] = mapped_column(ForeignKey("resumes.id"), primary_key=True)
     education_id: Mapped[int] = mapped_column(
         ForeignKey("educations.id"), primary_key=True
     )
-    education: Mapped["Education"] = relationship(back_populates="resumes")
+    education: Mapped["Education"] = relationship(back_populates="resumes", lazy="selectin")
     resume: Mapped["Resume"] = relationship(back_populates="educations")
     end_year: Mapped[int]
-
-@event.listens_for(Contact.__table__, "after_create")
-async def insert_initial_contacts(*args, **kwargs):
-    default_contacts = ["phone", "telegram", "email"]
-
-    for contact in default_contacts:
-        insert_query = insert(Contact).values({"contact": contact})
-
-        await execute(insert_query)
-
-@event.listens_for(PersonalQuality.__table__, "after_create")
-async def insert_initial_personal_qualities(*args, **kwargs):
-    default_qualities = ["python", "1c", "ABAP"]
-
-    for quality in default_qualities:
-        insert_query = insert(PersonalQuality).values({"description": quality})
-
-        await execute(insert_query)
-
-@event.listens_for(Education.__table__, "after_create")
-async def insert_initial_personal_educations(*args, **kwargs):
-    default_qualities = ["Полное высшее", "Среднее полное", "Неполное среднее"]
-
-    for quality in default_qualities:
-        insert_query = insert(Education).values({"type": quality})
-
-        await execute(insert_query)
