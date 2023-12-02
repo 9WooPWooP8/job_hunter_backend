@@ -1,9 +1,7 @@
 from typing import Annotated, Any
 
-from fastapi import Depends
 from sqlalchemy import CursorResult, Insert, MetaData, Select, Update
-from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
-                                    create_async_engine)
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
 
 from src.config import settings
@@ -40,7 +38,7 @@ async def fetch_all(
     session: AsyncSession, select_query: Select | Insert | Update
 ) -> list[dict[str, Any]]:
     cursor: CursorResult = await session.execute(select_query)
-    return cursor.all()
+    return cursor.scalars().all()
 
 
 async def execute(session: AsyncSession, select_query: Insert | Update) -> None:

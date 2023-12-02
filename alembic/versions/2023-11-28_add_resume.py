@@ -1,7 +1,7 @@
 """add_resume
 
 Revision ID: 4ca4b45931be
-Revises: d8dbdb75a214
+Revises: 676bb06977d2
 Create Date: 2023-11-28 15:44:25.036648
 
 """
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = '4ca4b45931be'
-down_revision: Union[str, None] = 'd8dbdb75a214'
+down_revision: Union[str, None] = '676bb06977d2'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

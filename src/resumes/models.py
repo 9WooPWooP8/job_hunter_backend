@@ -12,9 +12,7 @@ resume_personal_quality = Table(
     Column("personal_quality_id", Integer, ForeignKey("personal_qualities.id"), primary_key=True)
 )
 
-
 class Resume(Base):
-    __mapper_args__ = {"eager_defaults": True}
     __tablename__ = 'resumes'
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -55,7 +53,7 @@ class PersonalQuality(Base):
         back_populates="personal_qualities"
     )
 
-
+# organisation string
 class EmploymentRecord(Base):
     __tablename__ = "employment_records"
 
@@ -71,7 +69,6 @@ class EmploymentRecord(Base):
         back_populates="employment_records"
     )
 
-
 class Education(Base):
     __mapper_args__ = {"eager_defaults": True}
     __tablename__ = "educations"
@@ -82,7 +79,6 @@ class Education(Base):
     resumes: Mapped[list["ResumeEducation"]] = relationship(
         back_populates="education")
 
-
 class Contact(Base):
     __tablename__ = "contacts"
 
@@ -91,7 +87,6 @@ class Contact(Base):
 
     resumes: Mapped[list["ResumeContact"]] = relationship(
         back_populates="contact")
-
 
 class ResumeContact(Base):
     __tablename__ = "resume_contact"
@@ -103,9 +98,7 @@ class ResumeContact(Base):
     contact: Mapped["Contact"] = relationship(back_populates="resumes")
     resume: Mapped["Resume"] = relationship(back_populates="contacts")
 
-
 class ResumeEducation(Base):
-    __mapper_args__ = {"eager_defaults": True}
     __tablename__ = "resume_education"
     resume_id: Mapped[int] = mapped_column(ForeignKey("resumes.id"), primary_key=True)
     education_id: Mapped[int] = mapped_column(
