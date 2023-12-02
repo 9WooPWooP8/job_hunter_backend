@@ -14,16 +14,16 @@ class Vacancy(Base):
     status_id: Mapped[int]
     description: Mapped[str]
     plug: Mapped[str]
-    experience_id: Mapped[int] = mapped_column(ForeignKey("required_experiences.id"))
+    experience_min: Mapped[int]
+    experience_max: Mapped[int]
+    salary_min: Mapped[int]
+    salary_max: Mapped[int]
     rate_id: Mapped[int] = mapped_column(ForeignKey("rates.id"))
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     company: Mapped["Company"] = relationship(
         back_populates="vacancies", lazy="selectin"
     )
     rate: Mapped["Rate"] = relationship(
-        back_populates="vacancies", lazy="selectin"
-    )
-    experience: Mapped["RequiredExperience"] = relationship(
         back_populates="vacancies", lazy="selectin"
     )        
 

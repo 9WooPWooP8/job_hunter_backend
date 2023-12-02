@@ -76,7 +76,6 @@ class ApplicantStatus(Base):
         return f"applicant_statuses({self.id}) {self.name}"
 
 
-# insert default values (probably bad)
 @event.listens_for(ApplicantStatus.__table__, "after_create")
 async def insert_initial_values(*args, **kwargs):
     default_statuses = ["looking for job", "accepting offers", "not looking for job"]

@@ -37,7 +37,8 @@ class VacancyService:
             company_id=vacancy.company_id,
             status_id=VacancyStatus.ACTIVE.value,
             rate_id = vacancy.rate_id,
-            experience_id = vacancy.experience_id
+            experience_max = vacancy.experience_max,
+            experience_min = vacancy.experience_min
         )
         self.db.add(db_vacancy)
         await self.db.commit()
@@ -75,6 +76,8 @@ class VacancyService:
         db_vacancy.description = vacancy.description
         db_vacancy.experience_id = vacancy.experience_id
         db_vacancy.rate_id = vacancy.rate_id
+        db_vacancy.experience_min = vacancy.experience_min 
+        db_vacancy.experience_max = vacancy.experience_max 
 
         await self.db.commit()
 
