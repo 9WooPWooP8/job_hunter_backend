@@ -2,26 +2,53 @@ from datetime import datetime
 
 from src.models import CustomModel
 
+
 class EmploymentRecordRequest(CustomModel):
+    id: int | None = None
     start_date: datetime
     end_date: datetime
     organization: str
     position: str
     still_working: bool
 
-class ResumeResponse(CustomModel):
-    id: int
-    applicant_id: int
 
 class ResumeContact(CustomModel):
     contact_id: int
     extra_data: str
 
 class Education(CustomModel):
-    education_id: int
+    id: int
     type: str
+
+class ResumeEducationRequest(CustomModel):
+    education_id: int
     end_year: int
-    resume_id: int
+
+class ResumeEducationResponse(CustomModel):
+    education_id: int
+    end_year: int
+    education: Education
+class PersonalQualityResponse(CustomModel):
+    id: int
+    description: str
+
+class PersonalQualityResponse(CustomModel):
+    id: int
+    description: str
+
+
+class ResumeResponse(CustomModel):
+    id: int
+    applicant_id: int
+    photo: str | None
+    job_title: str
+    description: str
+    created_at: datetime
+    contacts: list[ResumeContact]
+    employment_records: list[EmploymentRecordRequest]
+    personal_qualities: list[PersonalQualityResponse]
+    educations: list[ResumeEducationResponse]
+
 
 class ResumeRequest(CustomModel):
     applicant_id: int
@@ -30,14 +57,8 @@ class ResumeRequest(CustomModel):
     contacts: list[ResumeContact]
     employment_records: list[EmploymentRecordRequest]
     personal_qualities: list[int]
-    education: list[Education]
+    education: list[ResumeEducationRequest]
 
-class PersonalQualityResponse(CustomModel):
-    id: int
-    description: str
-
-class PersonalQualityResponse(CustomModel):
-    description:str
 
 class EmploymentRecordResponse(CustomModel):
     id: int

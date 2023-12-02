@@ -9,6 +9,7 @@ from src.resumes.schemas import ResumeResponse, ResumeRequest
 
 router = APIRouter(prefix="/resumes", tags=["resumes"])
 
+
 @cbv(router)
 class ResumesCBV:
     _resumes_service: resume_service.ResumeService = Depends(resume_service.get_resume_service)
@@ -23,8 +24,9 @@ class ResumesCBV:
     @router.get("/{id}", response_model=ResumeResponse)
     async def get_by_id(
             self,
-            id:int,
+            id: int,
     ) -> list[ResumeResponse]:
+        print(await self._resumes_service.get_by_id(id))
         return await self._resumes_service.get_by_id(id)
 
     @router.delete("/{id}", response_model=None)
@@ -45,5 +47,5 @@ class ResumesCBV:
             self,
             id: int,
             resume_data: ResumeRequest,
-    ) -> list[ResumeResponse]:
+    ) -> ResumeResponse:
         return await self._resumes_service.update_resume(id, resume_data)
