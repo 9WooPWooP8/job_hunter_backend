@@ -53,7 +53,6 @@ class PersonalQuality(Base):
         back_populates="personal_qualities"
     )
 
-# organisation string
 class EmploymentRecord(Base):
     __tablename__ = "employment_records"
 
