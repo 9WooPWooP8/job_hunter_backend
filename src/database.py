@@ -31,7 +31,7 @@ async def fetch_one(
     session: AsyncSession, select_query: Select | Insert | Update
 ) -> dict[str, Any] | None:
     cursor: CursorResult = await session.execute(select_query)
-    return cursor.scalars().one_or_none()
+    return cursor.unique().scalars().one_or_none()
 
 
 async def fetch_all(

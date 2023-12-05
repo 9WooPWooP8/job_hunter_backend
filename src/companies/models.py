@@ -18,7 +18,7 @@ class Company(Base):
     owner: Mapped["Recruiter"] = relationship(
         back_populates="companies", lazy="selectin"
     )
-    vacancies: Mapped[list[Vacancy]] = relationship(back_populates="company")
+    vacancies: Mapped[list[Vacancy]] = relationship(back_populates="company", lazy="joined")
     population: Mapped[int]
     address: Mapped[str]
     phone: Mapped[str]

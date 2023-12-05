@@ -10,6 +10,9 @@ from src.companies.models import Company
 from src.companies.schemas import CompanyRequest
 from src.database import fetch_all, fetch_one, get_db
 from src.users.models import Recruiter
+from fastapi import UploadFile
+from pathlib import Path
+import os
 
 
 class CompanyService:
@@ -32,7 +35,9 @@ class CompanyService:
 
     async def create_company(self, company: CompanyRequest, user: Recruiter) -> Company:
         db_company = Company(
-            name=company.name, owner_id=user.user_id, description=company.description
+            name=company.name, owner_id=user.user_id, description=company.description,
+            population=company.population, address=company.address, phone=company.phone, email=company.email,
+            logo_path=""
         )
         self.db.add(db_company)
         await self.db.commit()
@@ -55,6 +60,25 @@ class CompanyService:
         await self.db.commit()
 
         return db_company
+    
+    async def upload_logo(self, company_id: int, file: UploadFile) -> Company:
+        os.umask(0)
+
+        db_company = await self.get_by_id(company_id)
+
+        path = Path("./files/companies/"+str(company_id)+"/")
+        path.mkdir(parents=True, exist_ok=True, mode=0o777)
+
+        with open("./files/companies/"+str(company_id)+"/"+file.filename, 'wb') as f:
+            while contents := file.file.read(1024 * 1024):
+                f.write(contents)
+        file.file.close()
+
+        db_company.logo_path = "./files/companies/"+str(company_id)+"/"+file.filename
+
+        await self.db.commit()
+
+        return db_company    
 
 
 # TODO:
