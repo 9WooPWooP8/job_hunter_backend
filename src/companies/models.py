@@ -20,7 +20,10 @@ class Company(Base):
     )
     vacancies: Mapped[list[Vacancy]] = relationship(back_populates="company")
     population: Mapped[int]
-    address: Mapped[address]
+    address: Mapped[str]
+    phone: Mapped[str]
+    email: Mapped[str]
+    logo_path: Mapped[str]
 
     def __repr__(self):
         return f"company ({self.id}) {self.name} {self.description}"
