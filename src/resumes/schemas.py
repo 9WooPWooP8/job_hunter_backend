@@ -16,21 +16,22 @@ class ResumeContact(CustomModel):
     contact_id: int
     extra_data: str
 
+
 class Education(CustomModel):
     id: int
     type: str
+
 
 class ResumeEducationRequest(CustomModel):
     education_id: int
     end_year: int
 
+
 class ResumeEducationResponse(CustomModel):
     education_id: int
     end_year: int
     education: Education
-class PersonalQualityResponse(CustomModel):
-    id: int
-    description: str
+
 
 class PersonalQualityResponse(CustomModel):
     id: int

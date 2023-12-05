@@ -26,4 +26,4 @@ class VacancyRequest(CustomModel):
     experience_min: int
     experience_max: int
     salary_min: int
-    salary_max: int    
+    salary_max: int

@@ -1,19 +1,32 @@
 from datetime import datetime
 
-from sqlalchemy import Table, Column, Integer, String, ForeignKey, Identity, event, func, insert
+from sqlalchemy import (
+    Column,
+    ForeignKey,
+    Integer,
+    Table,
+    func,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from src.database import Base, execute
 
+from src.database import Base
 from src.users.models import Applicant
 
 resume_personal_quality = Table(
-    "resume_personal_quality", Base.metadata,
+    "resume_personal_quality",
+    Base.metadata,
     Column("resume_id", Integer, ForeignKey("resumes.id"), primary_key=True),
-    Column("personal_quality_id", Integer, ForeignKey("personal_qualities.id"), primary_key=True)
+    Column(
+        "personal_quality_id",
+        Integer,
+        ForeignKey("personal_qualities.id"),
+        primary_key=True,
+    ),
 )
 
+
 class Resume(Base):
-    __tablename__ = 'resumes'
+    __tablename__ = "resumes"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     applicant_id: Mapped[int] = mapped_column(ForeignKey("applicants.user_id"))
@@ -23,23 +36,27 @@ class Resume(Base):
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
     contacts: Mapped[list["ResumeContact"]] = relationship(
-        back_populates="resume",
-        cascade="all, delete", lazy="selectin")
+        back_populates="resume", cascade="all, delete", lazy="joined"
+    )
 
-    applicant: Mapped[list["Applicant"]] = relationship(
-        back_populates="resumes", lazy="selectin")
+    applicant: Mapped["Applicant"] = relationship(
+        back_populates="resumes", lazy="joined"
+    )
 
     employment_records: Mapped[list["EmploymentRecord"]] = relationship(
-        back_populates="resume",
-        cascade="all, delete", lazy="selectin")
+        back_populates="resume", cascade="all, delete", lazy="joined"
+    )
 
     personal_qualities: Mapped[list["PersonalQuality"]] = relationship(
-        secondary=resume_personal_quality,
-        back_populates="resumes", lazy="selectin")
+        secondary=resume_personal_quality, back_populates="resumes", lazy="joined"
+    )
 
     educations: Mapped[list["ResumeEducation"]] = relationship(
-        back_populates="resume",
-        cascade="all, delete", lazy="selectin")
+        back_populates="resume", cascade="all, delete", lazy="joined"
+    )
+    responses: Mapped[list["VacancyResponse"]] = relationship(
+        back_populates="resume", lazy="joined", cascade="all, delete"
+    )
 
 
 class PersonalQuality(Base):
@@ -49,9 +66,9 @@ class PersonalQuality(Base):
     description: Mapped[str]
 
     resumes: Mapped[list["Resume"]] = relationship(
-        secondary=resume_personal_quality,
-        back_populates="personal_qualities"
+        secondary=resume_personal_quality, back_populates="personal_qualities"
     )
+
 
 class EmploymentRecord(Base):
     __tablename__ = "employment_records"
@@ -64,9 +81,8 @@ class EmploymentRecord(Base):
     resume_id: Mapped[int] = mapped_column(ForeignKey("resumes.id"))
     still_working: Mapped[bool]
 
-    resume: Mapped["Resume"] = relationship(
-        back_populates="employment_records"
-    )
+    resume: Mapped["Resume"] = relationship(back_populates="employment_records")
+
 
 class Education(Base):
     __mapper_args__ = {"eager_defaults": True}
@@ -75,8 +91,8 @@ class Education(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     type: Mapped[str]
 
-    resumes: Mapped[list["ResumeEducation"]] = relationship(
-        back_populates="education")
+    resumes: Mapped[list["ResumeEducation"]] = relationship(back_populates="education")
+
 
 class Contact(Base):
     __tablename__ = "contacts"
@@ -84,18 +100,17 @@ class Contact(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     contact: Mapped[str]
 
-    resumes: Mapped[list["ResumeContact"]] = relationship(
-        back_populates="contact")
+    resumes: Mapped[list["ResumeContact"]] = relationship(back_populates="contact")
+
 
 class ResumeContact(Base):
     __tablename__ = "resume_contact"
     resume_id: Mapped[int] = mapped_column(ForeignKey("resumes.id"), primary_key=True)
-    contact_id: Mapped[int] = mapped_column(
-        ForeignKey("contacts.id"), primary_key=True
-    )
+    contact_id: Mapped[int] = mapped_column(ForeignKey("contacts.id"), primary_key=True)
     extra_data: Mapped[str]
     contact: Mapped["Contact"] = relationship(back_populates="resumes")
     resume: Mapped["Resume"] = relationship(back_populates="contacts")
+
 
 class ResumeEducation(Base):
     __tablename__ = "resume_education"
@@ -103,6 +118,8 @@ class ResumeEducation(Base):
     education_id: Mapped[int] = mapped_column(
         ForeignKey("educations.id"), primary_key=True
     )
-    education: Mapped["Education"] = relationship(back_populates="resumes", lazy="selectin")
+    education: Mapped["Education"] = relationship(
+        back_populates="resumes", lazy="selectin"
+    )
     resume: Mapped["Resume"] = relationship(back_populates="educations")
     end_year: Mapped[int]
