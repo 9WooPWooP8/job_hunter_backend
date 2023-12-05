@@ -36,7 +36,7 @@ class CompaniesCBV:
         return await self._company_service.create_company(company_data, user)
     
     @router.post("/{id}/logo", response_model=CompanyResponse)
-    async def create_company(
+    async def upload_logo(
         self,
         id: int,
         logo_file: UploadFile,

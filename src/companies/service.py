@@ -13,6 +13,7 @@ from src.users.models import Recruiter
 from fastapi import UploadFile
 from pathlib import Path
 import os
+import stat
 
 
 class CompanyService:
@@ -62,18 +63,21 @@ class CompanyService:
         return db_company
     
     async def upload_logo(self, company_id: int, file: UploadFile) -> Company:
-        os.umask(0)
-
-        db_company = await self.get_by_id(company_id)
-
         path = Path("./files/companies/"+str(company_id)+"/")
         path.mkdir(parents=True, exist_ok=True, mode=0o777)
+        path = "./files/companies/"+str(company_id)+"/"
+        
+        for root, dirs, files in os.walk(path):
+            for momo in dirs:
+                os.chown(momo, 502, 20)
+                os.chmod(momo, stat.S_IROTH)
+
+        db_company = await self.get_by_id(company_id)
 
         with open("./files/companies/"+str(company_id)+"/"+file.filename, 'wb') as f:
             while contents := file.file.read(1024 * 1024):
                 f.write(contents)
         file.file.close()
-
         db_company.logo_path = "./files/companies/"+str(company_id)+"/"+file.filename
 
         await self.db.commit()
