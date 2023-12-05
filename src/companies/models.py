@@ -19,6 +19,8 @@ class Company(Base):
         back_populates="companies", lazy="selectin"
     )
     vacancies: Mapped[list[Vacancy]] = relationship(back_populates="company")
+    population: Mapped[int]
+    address: Mapped[address]
 
     def __repr__(self):
         return f"company ({self.id}) {self.name} {self.description}"
