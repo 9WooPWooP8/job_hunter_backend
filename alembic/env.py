@@ -14,6 +14,7 @@ import src.resumes.models
 import src.rates.models
 import src.vacancies.models
 import src.vacancy_responses.models
+import src.notifications.models
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

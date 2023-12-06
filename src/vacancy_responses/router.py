@@ -60,7 +60,7 @@ class VacancyResponseCBV:
     async def create(
         self,
         vacancy_response_data: VacancyResponseCreate,
-        recruiter: Applicant | None = Depends(applicant_is_authenticated),
+        applicant: Applicant | None = Depends(applicant_is_authenticated),
     ) -> VacancyResponseResponse:
         return await self._vacancy_response_service.create_vacancy_response(
             vacancy_response_data

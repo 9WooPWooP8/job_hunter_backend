@@ -4,6 +4,7 @@ from starlette.middleware.cors import CORSMiddleware
 from src.auth.router import router as auth_router
 from src.companies.router import router as companies_router
 from src.config import app_configs, settings
+from src.notifications.router import router as notifications_router
 from src.rates.router import router as rates_router
 from src.resumes.router import router as resumes_router
 from src.search.router import router as search_router
@@ -30,3 +31,4 @@ app.include_router(search_router)
 app.include_router(resumes_router)
 app.include_router(rates_router)
 app.include_router(vacancy_responses_router)
+app.include_router(notifications_router)
