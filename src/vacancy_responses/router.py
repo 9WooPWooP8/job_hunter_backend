@@ -83,6 +83,5 @@ class VacancyResponseCBV:
     @router.get("/statuses", response_model=list[VacancyResponseStatus])
     async def get_vacancy_response_statuses(
         self,
-        recruiter: Recruiter | None = Depends(recruiter_is_authenticated),
     ) -> VacancyResponseResponse:
         return await self._vacancy_response_service.get_vacancy_response_statuses()
