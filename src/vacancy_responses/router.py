@@ -2,12 +2,13 @@ from fastapi import APIRouter, Depends
 from fastapi_restful.cbv import cbv
 
 import src.vacancy_responses.service as vacancy_response_service
-from src.auth.dependencies import recruiter_is_authenticated
-from src.users.models import Recruiter
+from src.auth.dependencies import applicant_is_authenticated, recruiter_is_authenticated
+from src.users.models import Applicant, Recruiter
 from src.vacancy_responses.schemas import (
     VacancyResponseCreate,
     VacancyResponseListResponse,
     VacancyResponseResponse,
+    VacancyResponseStatus,
     VacancyResponseStatusUpdate,
 )
 
@@ -59,18 +60,29 @@ class VacancyResponseCBV:
     async def create(
         self,
         vacancy_response_data: VacancyResponseCreate,
+        recruiter: Applicant | None = Depends(applicant_is_authenticated),
     ) -> VacancyResponseResponse:
         return await self._vacancy_response_service.create_vacancy_response(
             vacancy_response_data
         )
 
-    @router.post("/{id}/status", response_model=VacancyResponseResponse)
+    @router.put(
+        "/{vacancy_id}/{resume_id}/status", response_model=VacancyResponseResponse
+    )
     async def update_status(
         self,
-        id: int,
+        vacancy_id: int,
+        resume_id: int,
         status_data: VacancyResponseStatusUpdate,
         recruiter: Recruiter | None = Depends(recruiter_is_authenticated),
     ) -> VacancyResponseResponse:
         return await self._vacancy_response_service.update_vacancy_response_status(
-            id, status_data.status_id
+            vacancy_id, resume_id, status_data.status_id.value
         )
+
+    @router.get("/statuses", response_model=list[VacancyResponseStatus])
+    async def get_vacancy_response_statuses(
+        self,
+        recruiter: Recruiter | None = Depends(recruiter_is_authenticated),
+    ) -> VacancyResponseResponse:
+        return await self._vacancy_response_service.get_vacancy_response_statuses()

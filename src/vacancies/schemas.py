@@ -16,6 +16,7 @@ class VacancyResponse(CustomModel):
     experience_max: int
     salary_min: int
     salary_max: int
+    responses_count: int
 
 
 class VacancyRequest(CustomModel):

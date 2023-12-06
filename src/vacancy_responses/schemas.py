@@ -1,11 +1,11 @@
 from datetime import datetime
 
 from src.models import CustomModel
-from src.vacancy_responses.enums import VacancyResponseStatus
+from src.vacancy_responses.enums import VacancyResponseStatusEnum
 
 
 class VacancyResponseStatusUpdate(CustomModel):
-    status_id: VacancyResponseStatus
+    status_id: VacancyResponseStatusEnum
 
 
 class VacancyResponseCreate(CustomModel):
