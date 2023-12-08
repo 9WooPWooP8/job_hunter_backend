@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime
 from typing import Optional
 
@@ -24,6 +26,7 @@ class User(Base):
     recruiter_account: Mapped[Optional["Recruiter"]] = relationship(
         back_populates="user"
     )
+
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     updated_at: Mapped[datetime | None] = mapped_column(onupdate=func.now())
 
@@ -40,11 +43,14 @@ class Applicant(Base):
     )
     status_id: Mapped[int] = mapped_column(ForeignKey("applicant_statuses.id"))
     status: Mapped["ApplicantStatus"] = relationship()
-    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
-    updated_at: Mapped[datetime | None] = mapped_column(onupdate=func.now())
-    resumes: Mapped [list["Resume"]] = relationship(
+
+    notifications: Mapped[list["Notification"]] = relationship(
         back_populates="applicant"
     )
+    resumes: Mapped[list["Resume"]] = relationship(back_populates="applicant")
+
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+    updated_at: Mapped[datetime | None] = mapped_column(onupdate=func.now())
 
     def __repr__(self):
         return f"applicants({self.user_id})"

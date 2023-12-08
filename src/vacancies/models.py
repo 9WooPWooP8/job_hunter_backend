@@ -23,10 +23,14 @@ class Vacancy(Base):
     company: Mapped["Company"] = relationship(
         back_populates="vacancies", lazy="selectin"
     )
-    rate: Mapped["Rate"] = relationship(
-        back_populates="vacancies", lazy="selectin"
-    )        
+    rate: Mapped["Rate"] = relationship(back_populates="vacancies", lazy="selectin")
+    responses: Mapped[list["VacancyResponse"]] = relationship(
+        back_populates="vacancy", lazy="selectin"
+    )
 
+    @property
+    def responses_count(self):
+        return len(self.responses)
 
     def __repr__(self):
         return f"vacancy ({self.id}) {self.description}"

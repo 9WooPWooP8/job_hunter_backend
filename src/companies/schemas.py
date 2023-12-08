@@ -1,6 +1,4 @@
-import re
 from datetime import datetime
-from typing import List
 
 from src.models import BaseModel
 from src.vacancies.schemas import VacancyResponse
@@ -33,5 +31,6 @@ class CompanySearchRequest(BaseModel):
     owner_id: int | None
     description: str | None
 
+
 class ListCompanyResponse(BaseModel):
-    notes: List[CompanyResponse]
+    notes: list[CompanyResponse]
