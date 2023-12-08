@@ -15,7 +15,7 @@ from src.vacancy_responses.models import VacancyResponseStatus
 
 # revision identifiers, used by Alembic.
 revision: str = "2ec6c74145bb"
-down_revision: Union[str, None] = "debb23da47f5"
+down_revision: Union[str, None] = "bda7c6d0c703"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
