@@ -3,11 +3,13 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from fastapi_restful.cbv import cbv
 from src.companies.schemas import CompanyResponse, ListCompanyResponse
+from src.resumes.schemas import ResumeRequest
 
 import src.search.service as search_service
 from src.search.schemas import (
     CompaniesFilterSearchRequest,
     CompaniesFilterSearchResponse,
+    ResumesSearchResponse,
     VacancySearchResponse,
 )
 from src.vacancies.schemas import VacancyRequest
@@ -37,3 +39,13 @@ class SearchCBV:
     ) -> VacancySearchResponse:
         search_data = await self._search_service.find_vacancies(filter_data, limit, page)
         return { "vacancies": search_data, "total": len(search_data), "limit": limit, "page": page }
+    
+    @router.post("/get_resumes", response_model=ResumesSearchResponse)
+    async def get_resumes(
+        self,
+        filter_data: ResumeRequest,
+        limit: int = 10, 
+        page: int = 1,
+    ) -> ResumesSearchResponse:
+        search_data = await self._search_service.find_resumes(filter_data, limit, page)
+        return { "resumes": search_data, "total": len(search_data), "limit": limit, "page": page }

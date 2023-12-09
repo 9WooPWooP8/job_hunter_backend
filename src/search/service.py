@@ -11,6 +11,8 @@ from src.auth.passwords import get_password_hash
 from src.companies.models import Company
 from src.companies.schemas import CompanyRequest
 from src.database import fetch_one, fetch_all, get_db
+from src.resumes.models import Resume
+from src.resumes.schemas import ResumeRequest
 from src.search.schemas import CompaniesFilterSearchRequest
 from src.vacancies.models import Vacancy
 from src.vacancies.schemas import VacancyRequest
@@ -63,6 +65,22 @@ class SearchService:
 
         if filter.rate_id >= 0:
             select_query = select_query.filter(filter.rate_id == Vacancy.rate_id)
+
+        select_query = select_query.offset(pagination["start"]).limit(pagination["end"])
+
+        return await fetch_all(self.db, select_query)
+    
+    async def find_resumes(self, filter: ResumeRequest, limit, page) -> list[Resume] | None:
+        pagination = self.calculate_pagination(limit, page)
+
+        resumes_description = "%{}%".format(filter.description)
+        job_title = "%{}%".format(filter.job_title)
+
+        select_query = select(Vacancy).filter(or_(Resume.description.like(resumes_description),
+                                                  Resume.job_title.like(job_title)))
+        
+        if filter.applicant_id:
+             select_query = select_query.filter(filter.applicant_id == Vacancy.applicant_id)
 
         select_query = select_query.offset(pagination["start"]).limit(pagination["end"])
 
