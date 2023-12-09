@@ -44,14 +44,28 @@ class SearchService:
     async def find_vacancies(self, filter: VacancyRequest, limit, page) -> list[Vacancy] | None:
         pagination = self.calculate_pagination(limit, page)
 
-        # vacancies_name_search = "%{}%".format(filter.name)
         vacancies_name_description = "%{}%".format(filter.description)
 
         select_query = select(Vacancy).filter(or_(Vacancy.description.like(vacancies_name_description),
-                                                  Vacancy.company_id == filter.company_id))\
-                                        .offset(pagination["start"])\
-                                        .limit(pagination["end"])
+                                                  Vacancy.company_id == filter.company_id))
         
+        if filter.experience_min > 0:
+             select_query = select_query.filter(filter.experience_min >= Vacancy.experience_min)
+
+        if filter.experience_max > 0:
+            select_query = select_query.filter(filter.experience_max <= Vacancy.experience_max)
+
+        if filter.salary_min > 0:
+            select_query = select_query.filter(filter.salary_min >= Vacancy.salary_min)
+
+        if filter.salary_max > 0:
+            select_query = select_query.filter(filter.salary_max < Vacancy.salary_max)
+
+        if filter.rate_id >= 0:
+            select_query = select_query.filter(filter.rate_id == Vacancy.rate_id)
+
+        select_query = select_query.offset(pagination["start"]).limit(pagination["end"])
+
         return await fetch_all(self.db, select_query)
 
 def get_search_service(
