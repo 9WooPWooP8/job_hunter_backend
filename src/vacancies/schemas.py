@@ -17,6 +17,7 @@ class VacancyResponse(CustomModel):
     salary_min: int
     salary_max: int
     responses_count: int
+    personal_qualities: str
 
 
 class VacancyRequest(CustomModel):
@@ -27,3 +28,4 @@ class VacancyRequest(CustomModel):
     experience_max: int | None
     salary_min: int | None
     salary_max: int | None
+    personal_qualities: str

@@ -41,7 +41,8 @@ class VacancyService:
             experience_min = vacancy.experience_min,
             plug="",
             salary_min = vacancy.salary_min,
-            salary_max = vacancy.salary_max
+            salary_max = vacancy.salary_max,
+            personal_qualities = vacancy.personal_qualities
         )
         self.db.add(db_vacancy)
         await self.db.commit()
@@ -82,7 +83,8 @@ class VacancyService:
         db_vacancy.experience_min = vacancy.experience_min 
         db_vacancy.experience_max = vacancy.experience_max 
         db_vacancy.salary_min = vacancy.salary_min
-        db_vacancy.salary_max = vacancy.salary_max        
+        db_vacancy.salary_max = vacancy.salary_max
+        db_vacancy.personal_qualities = vacancy.personal_qualities        
 
         await self.db.commit()
 

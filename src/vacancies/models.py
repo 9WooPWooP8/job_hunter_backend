@@ -27,6 +27,7 @@ class Vacancy(Base):
     responses: Mapped[list["VacancyResponse"]] = relationship(
         back_populates="vacancy", lazy="selectin"
     )
+    personal_qualities: Mapped[str]
 
     @property
     def responses_count(self):
