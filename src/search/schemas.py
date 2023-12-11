@@ -4,6 +4,7 @@ from datetime import datetime
 from src.companies.schemas import CompanyRequest, CompanyResponse, CompanySearchRequest
 
 from src.models import BaseModel
+from src.resumes.schemas import ResumeResponse
 from src.vacancies.schemas import VacancyResponse
 
 class CompaniesFilterSearchRequest(BaseModel):
@@ -17,6 +18,12 @@ class VacancySearchResponse(BaseModel):
 
 class CompaniesFilterSearchResponse(BaseModel):
     companies: list[CompanyResponse]
+    total: int
+    limit: int
+    page: int
+
+class ResumesSearchResponse(BaseModel):
+    resumes: list[ResumeResponse]
     total: int
     limit: int
     page: int
