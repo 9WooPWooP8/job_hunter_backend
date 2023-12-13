@@ -8,9 +8,8 @@ Create Date: 2023-12-02 18:23:15.365295
 from typing import Sequence, Union
 
 from alembic import op
-import sqlalchemy as sa
 
-from src.resumes.models import Education, Contact, PersonalQuality, EmploymentRecord
+from src.resumes.models import Education, Contact
 
 # revision identifiers, used by Alembic.
 revision: str = 'debb23da47f5'
@@ -36,17 +35,6 @@ def upgrade() -> None:
             {'id': 2, 'contact': 'WhatsApp'},
             {'id': 3, 'contact': 'Email'},
             {'id': 4, 'contact': 'Phone'}
-        ]
-    )
-
-    op.bulk_insert(
-        PersonalQuality.__table__,
-        [
-            {'id': 1, 'description': 'Надежность'},
-            {'id': 2, 'description': 'Честность'},
-            {'id': 3, 'description': 'Fast API'},
-            {'id': 4, 'description': '1С'},
-
         ]
     )
 

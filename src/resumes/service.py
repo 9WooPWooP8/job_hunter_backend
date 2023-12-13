@@ -1,14 +1,16 @@
 from __future__ import annotations
 
+import os
+import stat
+from pathlib import Path
 from typing import Annotated
 
-from fastapi import Depends
+from fastapi import Depends, UploadFile
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import fetch_one, fetch_all, get_db
-from src.resumes.models import Resume, EmploymentRecord, Contact, ResumeContact, Education, PersonalQuality, \
-    resume_personal_quality, ResumeEducation
+from src.resumes.models import Resume, EmploymentRecord, Contact, ResumeContact, Education, ResumeEducation
 from src.resumes.schemas import ResumeRequest, ResumeResponse
 
 
@@ -25,7 +27,9 @@ class ResumeService:
         db_resume = Resume(
             job_title=resume.job_title,
             description=resume.description,
-            applicant_id=resume.applicant_id
+            applicant_id=resume.applicant_id,
+            personal_qualities=resume.personal_qualities,
+            status_id=resume.status
         )
 
         for record in resume.employment_records:
@@ -37,11 +41,6 @@ class ResumeService:
                 still_working=record.still_working
             )
             db_resume.employment_records.append(new_record)
-
-        for quality in resume.personal_qualities:
-            select_query = select(PersonalQuality).where(quality == PersonalQuality.id)
-            one_query = await fetch_one(self.db, select_query)
-            db_resume.personal_qualities.append(one_query)
 
         for education in resume.education:
             new_education = ResumeEducation(
@@ -63,6 +62,8 @@ class ResumeService:
         db_resume.job_title = updated_resume.job_title
         db_resume.applicant_id = updated_resume.applicant_id
         db_resume.description = updated_resume.description
+        db_resume.personal_qualities = updated_resume.personal_qualities
+        db_resume.status_id = updated_resume.status
 
         for record in updated_resume.employment_records:
             existing_employment_records = list(filter(lambda x: x.id == record.id, db_resume.employment_records))
@@ -114,21 +115,6 @@ class ResumeService:
             db_resume.contacts.remove(delete_contact)
 
 
-        for personal_quality in updated_resume.personal_qualities:
-            existing_quality = list(filter(lambda x: x.id == personal_quality, db_resume.personal_qualities))
-            if not existing_quality:
-                xuy = select(PersonalQuality).where(PersonalQuality.id == personal_quality)
-                penis = await fetch_one(self.db, xuy)
-                db_resume.personal_qualities.append(penis)
-        deleted_qualities = []
-        for quality in db_resume.personal_qualities:
-            deleted_quality1 = list(filter(lambda x: x == quality.id, updated_resume.personal_qualities))
-            if not deleted_quality1:
-                deleted_qualities.append(quality)
-        for deleted_quality in deleted_qualities:
-            db_resume.personal_qualities.remove(deleted_quality)
-
-
         for education in updated_resume.education:
             existing_education = list(filter(lambda x: x.education_id == education.education_id, db_resume.educations))
             if existing_education:
@@ -159,7 +145,7 @@ class ResumeService:
         return await fetch_one(self.db, select_query)
 
     async def delete_resume(self, id) -> None:
-        stmt = await self.get_by_id(id);
+        stmt = await self.get_by_id(id)
         await self.db.delete(stmt)
         await self.db.commit()
 
@@ -168,6 +154,27 @@ class ResumeService:
 
         return await fetch_all(self.db, select_query)
 
+    async def upload_photo(self, resume_id: int, file: UploadFile) -> Resume:
+        path = Path("./files/resumes/" + str(resume_id) + "/")
+        path.mkdir(parents=True, exist_ok=True, mode=0o777)
+        path = "./files/resumes/" + str(resume_id) + "/"
+
+        for root, dirs, files in os.walk(path):
+            for momo in dirs:
+                os.chown(momo, 502, 20)
+                os.chmod(momo, stat.S_IROTH)
+
+        db_resume = await self.get_by_id(resume_id)
+
+        with open("./files/resumes/" + str(resume_id) + "/" + file.filename, 'wb') as f:
+            while contents := file.file.read(1024 * 1024):
+                f.write(contents)
+        file.file.close()
+        db_resume.logo_path = "./files/resumes/" + str(resume_id) + "/" + file.filename
+
+        await self.db.commit()
+
+        return db_resume
 
 def get_resume_service(
         db: Annotated[AsyncSession, Depends(get_db)],

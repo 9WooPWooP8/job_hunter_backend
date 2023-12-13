@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile
 from fastapi_restful.cbv import cbv
 
 import src.resumes.service as resume_service
@@ -49,3 +49,11 @@ class ResumesCBV:
             resume_data: ResumeRequest,
     ) -> ResumeResponse:
         return await self._resumes_service.update_resume(id, resume_data)
+
+    @router.post("/{id}/photo", response_model=ResumeResponse)
+    async def upload_photo(
+            self,
+            id: int,
+            photo: UploadFile,
+    ) -> ResumeResponse:
+        return await self._resumes_service.upload_photo(id, photo)

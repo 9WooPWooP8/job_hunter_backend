@@ -11,7 +11,6 @@ class EmploymentRecordRequest(CustomModel):
     position: str
     still_working: bool
 
-
 class ResumeContact(CustomModel):
     contact_id: int
     extra_data: str
@@ -37,6 +36,9 @@ class PersonalQualityResponse(CustomModel):
     id: int
     description: str
 
+class StatusResponse(CustomModel):
+    id: int
+    status: str
 
 class ResumeResponse(CustomModel):
     id: int
@@ -47,8 +49,9 @@ class ResumeResponse(CustomModel):
     created_at: datetime
     contacts: list[ResumeContact]
     employment_records: list[EmploymentRecordRequest]
-    personal_qualities: list[PersonalQualityResponse]
+    personal_qualities: str | None
     educations: list[ResumeEducationResponse]
+    status: StatusResponse
 
 
 class ResumeRequest(CustomModel):
@@ -57,8 +60,9 @@ class ResumeRequest(CustomModel):
     job_title: str
     contacts: list[ResumeContact]
     employment_records: list[EmploymentRecordRequest]
-    personal_qualities: list[int]
+    personal_qualities: str | None
     education: list[ResumeEducationRequest]
+    status: int
 
 
 class EmploymentRecordResponse(CustomModel):
