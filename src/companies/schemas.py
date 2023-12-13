@@ -15,6 +15,7 @@ class CompanyResponse(BaseModel):
     phone: str
     email: str
     logo_path: str  
+    responses_count: int
     
 
 class CompanyRequest(BaseModel):

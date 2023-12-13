@@ -25,5 +25,12 @@ class Company(Base):
     email: Mapped[str]
     logo_path: Mapped[str]
 
+    @property
+    def responses_count(self):
+        total_responses = 0
+        for x in self.vacancies:
+            total_responses = total_responses + x.responses_count 
+        return total_responses
+
     def __repr__(self):
         return f"company ({self.id}) {self.name} {self.description}"
