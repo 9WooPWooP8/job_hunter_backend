@@ -1,4 +1,7 @@
+from pathlib import Path
+
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 
 from src.auth.router import router as auth_router
@@ -32,3 +35,6 @@ app.include_router(resumes_router)
 app.include_router(rates_router)
 app.include_router(vacancy_responses_router)
 app.include_router(notifications_router)
+
+Path("./files").mkdir(parents=True, exist_ok=True)
+app.mount("/files", StaticFiles(directory="files"), name="files")
