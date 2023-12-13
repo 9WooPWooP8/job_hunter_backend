@@ -9,7 +9,7 @@ from src.auth.exceptions import AuthRequired, InvalidToken
 from src.auth.schemas import JWTClaims
 from src.users.models import User
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/tokens", auto_error=False)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/tokens/swagger", auto_error=False)
 
 DEFAULT_ACCESS_TOKEN_LIFETIME = timedelta(minutes=auth_config.JWT_EXP)
 

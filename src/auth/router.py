@@ -1,6 +1,7 @@
-from typing import Any
+from typing import Annotated, Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Response
+from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_restful.cbv import cbv
 
 import src.auth.service as auth_service
@@ -16,6 +17,27 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 @cbv(router)
 class AuthCBV:
     _auth_service: auth_service.AuthService = Depends(auth_service.get_auth_service)
+
+    @router.post("/tokens/swagger")
+    async def auth_swagger(
+        self,
+        form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+        response: Response,
+    ) -> AuthTokens:
+        user = await self._auth_service.authenticate_user(
+            form_data.username, form_data.password
+        )
+        access_token = jwt.create_access_token(user=user)
+        refresh_token_value = await self._auth_service.create_refresh_token(
+            user_id=user.id
+        )
+        response.set_cookie(**utils.get_refresh_token_settings(refresh_token_value))
+
+        return {
+            "access_token": access_token,
+            "token_type": "bearer",
+            "refresh_token": refresh_token_value,
+        }
 
     @router.post("/tokens/recruiters", response_model=AuthTokens)
     async def auth_recruiter(
