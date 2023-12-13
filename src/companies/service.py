@@ -78,7 +78,7 @@ class CompanyService:
             while contents := file.file.read(1024 * 1024):
                 f.write(contents)
         file.file.close()
-        db_company.logo_path = "./files/companies/"+str(company_id)+"/"+file.filename
+        db_company.logo_path = "/files/companies/"+str(company_id)+"/"+file.filename
 
         await self.db.commit()
 
