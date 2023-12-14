@@ -14,7 +14,7 @@ from src.users.schemas import (
     RecruiterCreate,
     RecruiterCreateResponse,
     RecruiterUpdate,
-    UserResponse,
+    UserResponse, ApplicantStatusResponse,
 )
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -65,3 +65,9 @@ class UsersCBV:
         recruiter_data: RecruiterUpdate,
     ) -> dict:
         return await self._user_service.update_recruiter(id, recruiter_data)
+
+    @router.get("/status/", response_model=list[ApplicantStatusResponse])
+    async def get_all_status(
+            self
+    ) -> list[ApplicantStatusResponse]:
+        return await self._user_service.get_all_status()
