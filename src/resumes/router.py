@@ -1,11 +1,11 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile
 from fastapi_restful.cbv import cbv
 
 import src.resumes.service as resume_service
 
-from src.resumes.schemas import ResumeResponse, ResumeRequest
+from src.resumes.schemas import ResumeResponse, ResumeRequest, Education, ResumeContact, PoluchitContact
 
 router = APIRouter(prefix="/resumes", tags=["resumes"])
 
@@ -40,7 +40,19 @@ class ResumesCBV:
     async def get_all(
             self
     ) -> list[ResumeResponse]:
-        return await self._resumes_service.get_all()
+        return await self._resumes_service.get_all_res()
+
+    @router.get("/edu/", response_model=list[Education])
+    async def get_all_edu(
+            self
+    ) -> list[Education]:
+        return await self._resumes_service.get_all_edu()
+
+    @router.get("/contact/", response_model=list[PoluchitContact])
+    async def get_all_contact(
+            self
+    ) -> list[PoluchitContact]:
+        return await self._resumes_service.get_all_contact()
 
     @router.put("/{id}", response_model=ResumeResponse)
     async def update_resume(
@@ -49,3 +61,11 @@ class ResumesCBV:
             resume_data: ResumeRequest,
     ) -> ResumeResponse:
         return await self._resumes_service.update_resume(id, resume_data)
+
+    @router.post("/{id}/photo", response_model=ResumeResponse)
+    async def upload_photo(
+            self,
+            id: int,
+            photo: UploadFile,
+    ) -> ResumeResponse:
+        return await self._resumes_service.upload_photo(id, photo)

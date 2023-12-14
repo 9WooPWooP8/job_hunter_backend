@@ -12,18 +12,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.database import Base
 from src.users.models import Applicant
 
-resume_personal_quality = Table(
-    "resume_personal_quality",
-    Base.metadata,
-    Column("resume_id", Integer, ForeignKey("resumes.id"), primary_key=True),
-    Column(
-        "personal_quality_id",
-        Integer,
-        ForeignKey("personal_qualities.id"),
-        primary_key=True,
-    ),
-)
-
 
 class Resume(Base):
     __tablename__ = "resumes"
@@ -47,9 +35,7 @@ class Resume(Base):
         back_populates="resume", cascade="all, delete", lazy="joined"
     )
 
-    personal_qualities: Mapped[list["PersonalQuality"]] = relationship(
-        secondary=resume_personal_quality, back_populates="resumes", lazy="joined"
-    )
+    personal_qualities: Mapped[str | None]
 
     educations: Mapped[list["ResumeEducation"]] = relationship(
         back_populates="resume", cascade="all, delete", lazy="joined"
@@ -57,18 +43,6 @@ class Resume(Base):
     responses: Mapped[list["VacancyResponse"]] = relationship(
         back_populates="resume", lazy="joined", cascade="all, delete"
     )
-
-
-class PersonalQuality(Base):
-    __tablename__ = "personal_qualities"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    description: Mapped[str]
-
-    resumes: Mapped[list["Resume"]] = relationship(
-        secondary=resume_personal_quality, back_populates="personal_qualities"
-    )
-
 
 class EmploymentRecord(Base):
     __tablename__ = "employment_records"
