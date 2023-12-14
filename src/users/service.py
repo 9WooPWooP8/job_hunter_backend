@@ -7,8 +7,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.auth.passwords import get_password_hash
-from src.database import fetch_one, get_db
-from src.users.models import Applicant, Recruiter, User
+from src.database import fetch_one, get_db, fetch_all
+from src.users.models import Applicant, Recruiter, User, ApplicantStatus
 from src.users.schemas import (
     ApplicantCreate,
     ApplicantUpdate,
@@ -121,6 +121,11 @@ class UserService:
         await self.db.commit()
 
         return applicant_db
+
+    async def get_all_status(self) -> list[ApplicantStatus] | None:
+        select_query = select(ApplicantStatus)
+
+        return await fetch_all(self.db, select_query)
 
 
 # TODO:

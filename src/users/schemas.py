@@ -47,6 +47,10 @@ class UserResponse(CustomModel):
 class ApplicantCreate(UserCreate):
     status_id: ApplicantStatus
 
+class ApplicantStatusResponse(CustomModel):
+    id: int
+    name: str
+
 
 class ApplicantUpdate(CustomModel):
     first_name: str
