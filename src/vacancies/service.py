@@ -35,6 +35,7 @@ class VacancyService:
         db_vacancy = Vacancy(
             description=vacancy.description,
             company_id=vacancy.company_id,
+            name=vacancy.name,
             status_id=VacancyStatus.ACTIVE.value,
             rate_id = vacancy.rate_id,
             experience_max = vacancy.experience_max,
@@ -78,13 +79,14 @@ class VacancyService:
         db_vacancy = await self.get_by_id(vacancy_id)
 
         db_vacancy.description = vacancy.description
+        db_vacancy.name = vacancy.name
         db_vacancy.experience_id = vacancy.experience_id
         db_vacancy.rate_id = vacancy.rate_id
-        db_vacancy.experience_min = vacancy.experience_min 
-        db_vacancy.experience_max = vacancy.experience_max 
+        db_vacancy.experience_min = vacancy.experience_min
+        db_vacancy.experience_max = vacancy.experience_max
         db_vacancy.salary_min = vacancy.salary_min
         db_vacancy.salary_max = vacancy.salary_max
-        db_vacancy.personal_qualities = vacancy.personal_qualities        
+        db_vacancy.personal_qualities = vacancy.personal_qualities
 
         await self.db.commit()
 
