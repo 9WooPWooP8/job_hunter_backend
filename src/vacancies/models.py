@@ -13,7 +13,7 @@ class Vacancy(Base):
     company_id: Mapped[int] = mapped_column(ForeignKey("companies.id"))
     status_id: Mapped[int]
     description: Mapped[str]
-    name: Mapped[str] = mapped_column(default="")
+    name: Mapped[str]
     plug: Mapped[str]
     experience_min: Mapped[int]
     experience_max: Mapped[int]
