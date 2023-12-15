@@ -11,6 +11,7 @@ class VacancyResponse(CustomModel):
     company_id: int
     status_id: int
     rate_id: int
+    name: str
     rate: RatesResponse
     experience_min: int
     experience_max: int
@@ -22,6 +23,7 @@ class VacancyResponse(CustomModel):
 
 class VacancyRequest(CustomModel):
     description: str
+    name: str
     company_id: int | None
     rate_id: int | None
     experience_min: int | None
