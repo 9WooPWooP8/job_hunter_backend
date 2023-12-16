@@ -45,4 +45,5 @@ class SearchCBV:
         limit: int = 10, 
         page: int = 1,
     ) -> ResumesSearchResponse:
+        print(await self._search_service.find_resumes(filter_data, limit, page))
         return await self._search_service.find_resumes(filter_data, limit, page)
