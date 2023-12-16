@@ -6,6 +6,8 @@ from fastapi_restful.cbv import cbv
 import src.resumes.service as resume_service
 
 from src.resumes.schemas import ResumeResponse, ResumeRequest, Education, ResumeContact, PoluchitContact
+from src.users.models import Applicant
+from src.auth.dependencies import applicant_is_authenticated
 
 router = APIRouter(prefix="/resumes", tags=["resumes"])
 
@@ -18,6 +20,7 @@ class ResumesCBV:
     async def create_resume(
             self,
             resume_data: ResumeRequest,
+            user: Applicant | None = Depends(applicant_is_authenticated),
     ) -> ResumeResponse:
         return await self._resumes_service.create_resume(resume_data)
 
@@ -33,6 +36,7 @@ class ResumesCBV:
     async def delete_resume(
             self,
             id: int,
+            user: Applicant | None = Depends(applicant_is_authenticated),
     ) -> list[ResumeResponse]:
         return await self._resumes_service.delete_resume(id)
 
@@ -59,6 +63,7 @@ class ResumesCBV:
             self,
             id: int,
             resume_data: ResumeRequest,
+            user: Applicant | None = Depends(applicant_is_authenticated),
     ) -> ResumeResponse:
         return await self._resumes_service.update_resume(id, resume_data)
 
@@ -67,5 +72,6 @@ class ResumesCBV:
             self,
             id: int,
             photo: UploadFile,
+            user: Applicant | None = Depends(applicant_is_authenticated),
     ) -> ResumeResponse:
         return await self._resumes_service.upload_photo(id, photo)

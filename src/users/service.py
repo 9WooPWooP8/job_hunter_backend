@@ -7,8 +7,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.auth.passwords import get_password_hash
-from src.database import fetch_one, get_db, fetch_all
-from src.users.models import Applicant, Recruiter, User, ApplicantStatus
+from src.database import fetch_all, fetch_one, get_db
+from src.exceptions import NotAuthenticated
+from src.users.models import Applicant, ApplicantStatus, Recruiter, User
 from src.users.schemas import (
     ApplicantCreate,
     ApplicantUpdate,
@@ -98,8 +99,11 @@ class UserService:
         return recruiter
 
     async def update_recruiter(
-        self, recruiter_id: int, recruiter: RecruiterUpdate
+        self, recruiter_id: int, recruiter: RecruiterUpdate, user: Recruiter
     ) -> Recruiter:
+        if recruiter_id != user.user_id:
+            raise NotAuthenticated()
+
         recruiter_db = await self.get_recruiter_by_id(recruiter_id)
 
         recruiter_db.user.first_name = recruiter.first_name
@@ -110,8 +114,11 @@ class UserService:
         return recruiter_db
 
     async def update_applicant(
-        self, applicant_id: int, applicant: ApplicantUpdate
+        self, applicant_id: int, applicant: ApplicantUpdate, user: Applicant
     ) -> Applicant:
+        if applicant_id != user.user_id:
+            raise NotAuthenticated()
+
         applicant_db = await self.get_applicant_by_id(applicant_id)
 
         applicant_db.user.first_name = applicant.first_name
