@@ -6,13 +6,13 @@ from fastapi import Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.companies.models import Company
 from src.database import fetch_all, fetch_one, get_db
+from src.exceptions import NotAuthenticated
+from src.users.models import Recruiter
 from src.vacancies.enums import VacancyStatus
 from src.vacancies.models import Vacancy
 from src.vacancies.schemas import VacancyRequest
-from src.users.models import Recruiter
-from src.exceptions import NotAuthenticated
-from src.companies.models import Company
 
 
 class VacancyService:
@@ -62,14 +62,14 @@ class VacancyService:
 
         db_company = await fetch_one(self.db, select_query)
 
-        if db_company is  None or db_company.owner_id != user.user_id:
-           raise NotAuthenticated()                
+        if db_company is None or db_company.owner_id != user.user_id:
+            raise NotAuthenticated()
 
         db_vacancy.status_id = VacancyStatus.NOT_ACTIVE.value
 
         await self.db.commit()
 
-        return db_vacancy
+        return True
 
     async def activate_vacancy(self, vacancy_id: int, user: Recruiter) -> Vacancy:
         db_vacancy = await self.get_by_id(vacancy_id)
@@ -78,14 +78,14 @@ class VacancyService:
 
         db_company = await fetch_one(self.db, select_query)
 
-        if db_company is  None or db_company.owner_id != user.user_id:
-           raise NotAuthenticated()
+        if db_company is None or db_company.owner_id != user.user_id:
+            raise NotAuthenticated()
 
         db_vacancy.status_id = VacancyStatus.ACTIVE.value
 
         await self.db.commit()
 
-        return db_vacancy
+        return True
 
     async def delete_vacancy(self, id, user: Recruiter) -> None:
         db_vacancy = self.get_by_id(id)
@@ -94,21 +94,23 @@ class VacancyService:
 
         db_company = await fetch_one(self.db, select_query)
 
-        if db_company is  None or db_company.owner_id != user.user_id:
-           raise NotAuthenticated()
-        
+        if db_company is None or db_company.owner_id != user.user_id:
+            raise NotAuthenticated()
+
         self.db.delete(db_vacancy)
         await self.db.commit()
 
-    async def update_vacancy(self, vacancy_id: int, vacancy: VacancyRequest, user: Recruiter) -> Vacancy:
+    async def update_vacancy(
+        self, vacancy_id: int, vacancy: VacancyRequest, user: Recruiter
+    ) -> Vacancy:
         db_vacancy = await self.get_by_id(vacancy_id)
 
         select_query = select(Company).where(Company.id == db_vacancy.company_id)
 
         db_company = await fetch_one(self.db, select_query)
 
-        if db_company is  None or db_company.owner_id != user.user_id:
-           raise NotAuthenticated()
+        if db_company is None or db_company.owner_id != user.user_id:
+            raise NotAuthenticated()
 
         db_vacancy.description = vacancy.description
         db_vacancy.name = vacancy.name
