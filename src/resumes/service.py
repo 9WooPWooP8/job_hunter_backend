@@ -12,6 +12,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.database import fetch_one, fetch_all, get_db
 from src.resumes.models import Resume, EmploymentRecord, ResumeContact, ResumeEducation, Education, Contact
 from src.resumes.schemas import ResumeRequest
+from src.users.models import Applicant
+from src.exceptions import NotAuthenticated
 
 
 class ResumeService:
@@ -23,7 +25,7 @@ class ResumeService:
     ):
         self.db = db
 
-    async def create_resume(self, resume: ResumeRequest) -> Resume:
+    async def create_resume(self, resume: ResumeRequest, user: Applicant) -> Resume:
         db_resume = Resume(
             job_title=resume.job_title,
             description=resume.description,
@@ -56,8 +58,11 @@ class ResumeService:
 
         return db_resume
 
-    async def update_resume(self, resume_id: int, updated_resume: ResumeRequest) -> Resume:
+    async def update_resume(self, resume_id: int, updated_resume: ResumeRequest, user: Applicant) -> Resume:
         db_resume = await self.get_by_id(resume_id)
+
+        if db_resume.applicant_id != user.user_id:
+           raise NotAuthenticated() 
 
         db_resume.job_title = updated_resume.job_title
         db_resume.applicant_id = updated_resume.applicant_id
@@ -144,8 +149,10 @@ class ResumeService:
         select_query = select(Resume).where(Resume.id == id)
         return await fetch_one(self.db, select_query)
 
-    async def delete_resume(self, id) -> None:
-        stmt = await self.get_by_id(id);
+    async def delete_resume(self, id, user: Applicant) -> None:
+        stmt = await self.get_by_id(id)
+        if stmt.applicant_id != user.user_id:
+           raise NotAuthenticated()
         await self.db.delete(stmt)
         await self.db.commit()
 
@@ -166,7 +173,7 @@ class ResumeService:
 
         return await fetch_all(self.db, select_query)
 
-    async def upload_photo(self, resume_id: int, file: UploadFile) -> Resume:
+    async def upload_photo(self, resume_id: int, file: UploadFile, user: Applicant) -> Resume:
         path = Path("./files/resumes/" + str(resume_id) + "/")
         path.mkdir(parents=True, exist_ok=True, mode=0o777)
         path = "./files/resumes/" + str(resume_id) + "/"
@@ -177,6 +184,9 @@ class ResumeService:
                 os.chmod(momo, stat.S_IROTH)
 
         db_resume = await self.get_by_id(resume_id)
+
+        if db_resume.applicant_id != user.user_id:
+           raise NotAuthenticated()
 
         with open("./files/resumes/" + str(resume_id) + "/" + file.filename, 'wb') as f:
             while contents := file.file.read(1024 * 1024):

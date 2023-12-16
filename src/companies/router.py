@@ -40,8 +40,9 @@ class CompaniesCBV:
         self,
         id: int,
         logo_file: UploadFile,
+        user: Recruiter | None = Depends(recruiter_is_authenticated),
     ) -> CompanyResponse:
-        return await self._company_service.upload_logo(id, logo_file)
+        return await self._company_service.upload_logo(id, logo_file, user)
 
 
     @router.put("/{id}", response_model=CompanyResponse)
@@ -49,12 +50,14 @@ class CompaniesCBV:
         self,
         id: int,
         company_data: CompanyRequest,
+        user: Recruiter | None = Depends(recruiter_is_authenticated),
     ) -> CompanyResponse:
-        return await self._company_service.update_company(id, company_data)
+        return await self._company_service.update_company(id, company_data, user)
 
     @router.delete("/{id}", response_model=None)
     async def delete_company(
         self,
         id: int,
+        user: Recruiter | None = Depends(recruiter_is_authenticated),
     ) -> CompanyResponse:
-        return await self._company_service.delete_company(id)
+        return await self._company_service.delete_company(id, user)

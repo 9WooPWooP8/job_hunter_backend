@@ -14,6 +14,7 @@ from fastapi import UploadFile
 from pathlib import Path
 import os
 import stat
+from src.exceptions import NotAuthenticated
 
 
 class CompanyService:
@@ -47,13 +48,20 @@ class CompanyService:
 
         return db_company
 
-    async def delete_company(self, id) -> None:
+    async def delete_company(self, id, user: Recruiter) -> None:
         db_company = self.get_by_id(id)
+
+        if db_company.owner_id != user.user_id:
+            raise NotAuthenticated
+
         self.db.delete(db_company)
         await self.db.commit()
 
-    async def update_company(self, company_id: int, company: CompanyRequest) -> Company:
+    async def update_company(self, company_id: int, company: CompanyRequest, user: Recruiter) -> Company:
         db_company = await self.get_by_id(company_id)
+
+        if db_company.owner_id != user.user_id:
+            raise NotAuthenticated        
 
         db_company.name = company.name
         db_company.description = company.description
@@ -62,7 +70,7 @@ class CompanyService:
 
         return db_company
     
-    async def upload_logo(self, company_id: int, file: UploadFile) -> Company:
+    async def upload_logo(self, company_id: int, file: UploadFile, user: Recruiter) -> Company:
         path = Path("./files/companies/"+str(company_id)+"/")
         path.mkdir(parents=True, exist_ok=True, mode=0o777)
         path = "./files/companies/"+str(company_id)+"/"
@@ -73,6 +81,9 @@ class CompanyService:
                 os.chmod(momo, stat.S_IROTH)
 
         db_company = await self.get_by_id(company_id)
+
+        if db_company.owner_id != user.user_id:
+            raise NotAuthenticated        
 
         with open("./files/companies/"+str(company_id)+"/"+file.filename, 'wb') as f:
             while contents := file.file.read(1024 * 1024):

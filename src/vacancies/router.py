@@ -32,33 +32,37 @@ class VacanciesCBV:
         vacancy_data: VacancyRequest,
         user: Recruiter | None = Depends(recruiter_is_authenticated),
     ) -> list[VacancyResponse]:
-        return await self._vacancy_service.create_vacancy(vacancy_data)
+        return await self._vacancy_service.create_vacancy(vacancy_data, user)
 
     @router.put("/{id}", response_model=VacancyResponse)
     async def update_vacancy(
         self,
         id: int,
         vacancy_data: VacancyRequest,
+        user: Recruiter | None = Depends(recruiter_is_authenticated)
     ) -> VacancyResponse:
-        return await self._vacancy_service.update_vacancy(id, vacancy_data)
+        return await self._vacancy_service.update_vacancy(id, vacancy_data, user)
 
     @router.delete("/{id}", response_model=None)
     async def delete_vacancy(
         self,
         id: int,
+        user: Recruiter | None = Depends(recruiter_is_authenticated)
     ) -> VacancyResponse:
-        return await self._vacancy_service.delete_vacancy(id)
+        return await self._vacancy_service.delete_vacancy(id, user)
 
     @router.put("/{id}/activate", response_model=None)
     async def activate_vacancy(
         self,
         id: int,
+        user: Recruiter | None = Depends(recruiter_is_authenticated)
     ) -> VacancyResponse:
-        return await self._vacancy_service.activate_vacancy(id)
+        return await self._vacancy_service.activate_vacancy(id, user)
 
     @router.put("/{id}/disable", response_model=None)
     async def delete_vacancy(
         self,
         id: int,
+        user: Recruiter | None = Depends(recruiter_is_authenticated)
     ) -> VacancyResponse:
-        return await self._vacancy_service.disable_vacancy(id)
+        return await self._vacancy_service.disable_vacancy(id, user)
