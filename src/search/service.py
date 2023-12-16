@@ -74,7 +74,7 @@ class SearchService:
         total = await fetch_all(self.db, select(Company))
         total = len(total)
 
-        return { "resumes": await fetch_all(self.db, select_query), "limit": limit, "page": page, "total": total }
+        return { "vacancies": await fetch_all(self.db, select_query), "limit": limit, "page": page, "total": total }
     
     async def find_resumes(self, filter: ResumeRequest, limit, page) -> ResumesSearchResponse | None:
         pagination = self.calculate_pagination(limit, page)
@@ -92,7 +92,7 @@ class SearchService:
         total = await fetch_all(self.db, select(Company))
         total = len(total)
 
-        return { "vacancies": await fetch_all(self.db, select_query), "limit": limit, "page": page, "total": total }
+        return { "resumes": await fetch_all(self.db, select_query), "limit": limit, "page": page, "total": total }
 
 def get_search_service(
     db: Annotated[AsyncSession, Depends(get_db)],
