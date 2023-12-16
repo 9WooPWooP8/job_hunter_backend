@@ -42,6 +42,7 @@ class VacancyResponseCBV:
                     applicant_description=vacancy_response.resume.description,
                     resume_id=vacancy_response.resume_id,
                     vacancy_title=vacancy_response.vacancy.description,
+                    vacancy_id = vacancy_response.vacancy_id
                 )
             )
 

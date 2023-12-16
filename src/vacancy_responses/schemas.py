@@ -40,3 +40,4 @@ class VacancyResponseListResponse(CustomModel):
     applicant_description: str
     resume_id: int
     vacancy_title: str
+    vacancy_id: int

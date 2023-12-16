@@ -35,6 +35,13 @@ class UsersCBV:
         self, user: Applicant | None = Depends(applicant_is_authenticated)
     ) -> UserResponse:
         return user
+    
+    @router.get("/applicants/{id}", response_model=ApplicantCreateResponse)
+    async def get_applicant_by_id(
+        self,
+        id:int
+    ) -> ApplicantCreateResponse:
+        return await self._user_service.get_applicant_by_id(id)
 
     @router.post("/recruiters", response_model=RecruiterCreateResponse)
     async def register_as_recruiter(
