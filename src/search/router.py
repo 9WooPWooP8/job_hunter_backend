@@ -27,8 +27,7 @@ class SearchCBV:
         limit: int = 10, 
         page: int = 1,
     ) -> CompaniesFilterSearchResponse:
-        search_data = await self._search_service.find_company(filter_data, limit, page)
-        return { "companies": search_data, "total": len(search_data), "limit": limit, "page": page }
+        return await self._search_service.find_company(filter_data, limit, page)
     
     @router.post("/get_vacancies", response_model=VacancySearchResponse)
     async def get_vacancies(
@@ -37,8 +36,7 @@ class SearchCBV:
         limit: int = 10, 
         page: int = 1,
     ) -> VacancySearchResponse:
-        search_data = await self._search_service.find_vacancies(filter_data, limit, page)
-        return { "vacancies": search_data, "total": len(search_data), "limit": limit, "page": page }
+        return await self._search_service.find_vacancies(filter_data, limit, page)
     
     @router.post("/get_resumes", response_model=ResumesSearchResponse)
     async def get_resumes(
@@ -47,5 +45,5 @@ class SearchCBV:
         limit: int = 10, 
         page: int = 1,
     ) -> ResumesSearchResponse:
-        search_data = await self._search_service.find_resumes(filter_data, limit, page)
-        return { "resumes": search_data, "total": len(search_data), "limit": limit, "page": page }
+        print(await self._search_service.find_resumes(filter_data, limit, page))
+        return await self._search_service.find_resumes(filter_data, limit, page)
