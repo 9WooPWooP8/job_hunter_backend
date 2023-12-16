@@ -10,11 +10,12 @@ from src.users.models import Applicant, Recruiter
 from src.users.schemas import (
     ApplicantCreate,
     ApplicantCreateResponse,
+    ApplicantStatusResponse,
     ApplicantUpdate,
     RecruiterCreate,
     RecruiterCreateResponse,
     RecruiterUpdate,
-    UserResponse, ApplicantStatusResponse,
+    UserResponse,
 )
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -35,12 +36,9 @@ class UsersCBV:
         self, user: Applicant | None = Depends(applicant_is_authenticated)
     ) -> UserResponse:
         return user
-    
+
     @router.get("/applicants/{id}", response_model=ApplicantCreateResponse)
-    async def get_applicant_by_id(
-        self,
-        id:int
-    ) -> ApplicantCreateResponse:
+    async def get_applicant_by_id(self, id: int) -> ApplicantCreateResponse:
         return await self._user_service.get_applicant_by_id(id)
 
     @router.post("/recruiters", response_model=RecruiterCreateResponse)
@@ -62,19 +60,19 @@ class UsersCBV:
         self,
         id: int,
         applicant_data: ApplicantUpdate,
+        user: Applicant | None = Depends(applicant_is_authenticated),
     ) -> ApplicantCreateResponse:
-        return await self._user_service.update_applicant(id, applicant_data)
+        return await self._user_service.update_applicant(id, applicant_data, user)
 
     @router.put("/recruiters/{id}", response_model=RecruiterCreateResponse)
     async def update_recruiter(
         self,
         id: int,
         recruiter_data: RecruiterUpdate,
+        user: Recruiter | None = Depends(recruiter_is_authenticated),
     ) -> dict:
-        return await self._user_service.update_recruiter(id, recruiter_data)
+        return await self._user_service.update_recruiter(id, recruiter_data, user)
 
     @router.get("/status/", response_model=list[ApplicantStatusResponse])
-    async def get_all_status(
-            self
-    ) -> list[ApplicantStatusResponse]:
+    async def get_all_status(self) -> list[ApplicantStatusResponse]:
         return await self._user_service.get_all_status()
