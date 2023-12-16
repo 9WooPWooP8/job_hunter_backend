@@ -4,6 +4,8 @@ from sqlalchemy import CursorResult, Insert, MetaData, Select, Update
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
 
+from sqlalchemy.sql import func
+
 from src.config import settings
 from src.constants import DB_NAMING_CONVENTION
 
@@ -43,3 +45,8 @@ async def fetch_all(
 
 async def execute(session: AsyncSession, select_query: Insert | Update) -> None:
     await session.execute(select_query)
+
+async def get_count(q):
+    count_q = q.statement.with_only_columns([func.count()]).order_by(None)
+    count = q.session.execute(count_q).scalar()
+    return count

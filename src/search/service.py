@@ -10,10 +10,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.auth.passwords import get_password_hash
 from src.companies.models import Company
 from src.companies.schemas import CompanyRequest
-from src.database import fetch_one, fetch_all, get_db
+from src.database import fetch_one, fetch_all, get_count, get_db
 from src.resumes.models import Resume
 from src.resumes.schemas import ResumeRequest
-from src.search.schemas import CompaniesFilterSearchRequest
+from src.search.schemas import CompaniesFilterSearchRequest, CompaniesFilterSearchResponse, ResumesSearchResponse, VacancySearchResponse
 from src.vacancies.models import Vacancy
 from src.vacancies.schemas import VacancyRequest
 
@@ -31,7 +31,7 @@ class SearchService:
         end = start + limit
         return { "start": start, "end": end }
 
-    async def find_company(self, filter: CompaniesFilterSearchRequest, limit, page) -> list[Company] | None:
+    async def find_company(self, filter: CompaniesFilterSearchRequest, limit, page) -> CompaniesFilterSearchResponse | None:
         pagination = self.calculate_pagination(limit, page)
 
         company_name_search = "%{}%".format(filter.filter_company.name)
@@ -41,9 +41,13 @@ class SearchService:
                                                   Company.description.like(company_name_description)))\
                                         .offset(pagination["start"])\
                                         .limit(pagination["end"])
-        return await fetch_all(self.db, select_query)
-    
-    async def find_vacancies(self, filter: VacancyRequest, limit, page) -> list[Vacancy] | None:
+        
+        total = await fetch_all(self.db, select(Company))
+        total = len(total)
+
+        return { "companies": await fetch_all(self.db, select_query), "limit": limit, "page": page, "total": total }
+
+    async def find_vacancies(self, filter: VacancyRequest, limit, page) -> VacancySearchResponse | None:
         pagination = self.calculate_pagination(limit, page)
 
         vacancies_name_description = "%{}%".format(filter.description)
@@ -67,24 +71,28 @@ class SearchService:
             select_query = select_query.filter(filter.rate_id == Vacancy.rate_id)
 
         select_query = select_query.offset(pagination["start"]).limit(pagination["end"])
+        total = await fetch_all(self.db, select(Company))
+        total = len(total)
 
-        return await fetch_all(self.db, select_query)
+        return { "resumes": await fetch_all(self.db, select_query), "limit": limit, "page": page, "total": total }
     
-    async def find_resumes(self, filter: ResumeRequest, limit, page) -> list[Resume] | None:
+    async def find_resumes(self, filter: ResumeRequest, limit, page) -> ResumesSearchResponse | None:
         pagination = self.calculate_pagination(limit, page)
 
         resumes_description = "%{}%".format(filter.description)
         job_title = "%{}%".format(filter.job_title)
 
-        select_query = select(Vacancy).filter(or_(Resume.description.like(resumes_description),
+        select_query = select(Resume).filter(or_(Resume.description.like(resumes_description),
                                                   Resume.job_title.like(job_title)))
         
         if filter.applicant_id:
              select_query = select_query.filter(filter.applicant_id == Vacancy.applicant_id)
 
         select_query = select_query.offset(pagination["start"]).limit(pagination["end"])
+        total = await fetch_all(self.db, select(Company))
+        total = len(total)
 
-        return await fetch_all(self.db, select_query)
+        return { "vacancies": await fetch_all(self.db, select_query), "limit": limit, "page": page, "total": total }
 
 def get_search_service(
     db: Annotated[AsyncSession, Depends(get_db)],
