@@ -1,11 +1,10 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile
 from fastapi_restful.cbv import cbv
 
 import src.companies.service as company_service
 from src.auth.dependencies import recruiter_is_authenticated
 from src.companies.schemas import CompanyRequest, CompanyResponse
 from src.users.models import Recruiter
-from fastapi import UploadFile
 
 router = APIRouter(prefix="/companies", tags=["companies"])
 
@@ -34,7 +33,7 @@ class CompaniesCBV:
         user: Recruiter | None = Depends(recruiter_is_authenticated),
     ) -> CompanyResponse:
         return await self._company_service.create_company(company_data, user)
-    
+
     @router.post("/{id}/logo", response_model=CompanyResponse)
     async def upload_logo(
         self,
@@ -43,7 +42,6 @@ class CompaniesCBV:
         user: Recruiter | None = Depends(recruiter_is_authenticated),
     ) -> CompanyResponse:
         return await self._company_service.upload_logo(id, logo_file, user)
-
 
     @router.put("/{id}", response_model=CompanyResponse)
     async def update_company(
