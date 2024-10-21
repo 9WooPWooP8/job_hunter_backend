@@ -1,10 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import (
-    Column,
     ForeignKey,
-    Integer,
-    Table,
     func,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -43,6 +40,7 @@ class Resume(Base):
     responses: Mapped[list["VacancyResponse"]] = relationship(
         back_populates="resume", lazy="joined", cascade="all, delete"
     )
+
 
 class EmploymentRecord(Base):
     __tablename__ = "employment_records"
