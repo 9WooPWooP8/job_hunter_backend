@@ -18,7 +18,9 @@ class Company(Base):
     owner: Mapped["Recruiter"] = relationship(
         back_populates="companies", lazy="selectin"
     )
-    vacancies: Mapped[list[Vacancy]] = relationship(back_populates="company", lazy="joined")
+    vacancies: Mapped[list[Vacancy]] = relationship(
+        back_populates="company", lazy="joined"
+    )
     population: Mapped[int]
     address: Mapped[str]
     phone: Mapped[str]
@@ -29,7 +31,7 @@ class Company(Base):
     def responses_count(self):
         total_responses = 0
         for x in self.vacancies:
-            total_responses = total_responses + x.responses_count 
+            total_responses = total_responses + x.responses_count
         return total_responses
 
     def __repr__(self):

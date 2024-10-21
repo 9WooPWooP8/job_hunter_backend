@@ -5,6 +5,7 @@ Revises: 83bfcf02369a
 Create Date: 2023-12-02 18:23:15.365295
 
 """
+
 from typing import Sequence, Union
 
 from alembic import op
@@ -13,8 +14,8 @@ import sqlalchemy as sa
 from src.resumes.models import Education, Contact, EmploymentRecord
 
 # revision identifiers, used by Alembic.
-revision: str = 'debb23da47f5'
-down_revision: Union[str, None] = '83bfcf02369a'
+revision: str = "debb23da47f5"
+down_revision: Union[str, None] = "83bfcf02369a"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -23,20 +24,20 @@ def upgrade() -> None:
     op.bulk_insert(
         Education.__table__,
         [
-            {'id': 1, 'type': 'Неполное среднее'},
-            {'id': 2, 'type': 'Полное среднее'},
-            {'id': 3, 'type': 'Высшее'}
-        ]
+            {"id": 1, "type": "Неполное среднее"},
+            {"id": 2, "type": "Полное среднее"},
+            {"id": 3, "type": "Высшее"},
+        ],
     )
 
     op.bulk_insert(
         Contact.__table__,
         [
-            {'id': 1, 'contact': 'telegram'},
-            {'id': 2, 'contact': 'WhatsApp'},
-            {'id': 3, 'contact': 'Email'},
-            {'id': 4, 'contact': 'Phone'}
-        ]
+            {"id": 1, "contact": "telegram"},
+            {"id": 2, "contact": "WhatsApp"},
+            {"id": 3, "contact": "Email"},
+            {"id": 4, "contact": "Phone"},
+        ],
     )
 
 
