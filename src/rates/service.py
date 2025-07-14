@@ -24,6 +24,7 @@ class RatesService:
 
         return await fetch_all(self.db, select_query)
 
+
 # TODO:
 def get_rates_service(
     db: Annotated[AsyncSession, Depends(get_db)],
