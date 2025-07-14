@@ -16,6 +16,7 @@ class ResumeContact(CustomModel):
     contact_id: int
     extra_data: str
 
+
 class PoluchitContact(CustomModel):
     id: int
     contact: str
@@ -41,6 +42,7 @@ class PersonalQualityResponse(CustomModel):
     id: int
     description: str
 
+
 class ResumeResponse(CustomModel):
     id: int
     applicant_id: int
@@ -53,6 +55,7 @@ class ResumeResponse(CustomModel):
     personal_qualities: str
     educations: list[ResumeEducationResponse]
 
+
 class ResumeRequest(CustomModel):
     applicant_id: int
     description: str
@@ -61,6 +64,7 @@ class ResumeRequest(CustomModel):
     employment_records: list[EmploymentRecordRequest]
     personal_qualities: str | None
     education: list[ResumeEducationRequest]
+
 
 class EmploymentRecordResponse(CustomModel):
     id: int

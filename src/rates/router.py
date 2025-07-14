@@ -9,9 +9,7 @@ router = APIRouter(prefix="/rates", tags=["rates"])
 
 @cbv(router)
 class RatesCBV:
-    _rate_service: rate_service.RatesService = Depends(
-        rate_service.get_rates_service
-    )
+    _rate_service: rate_service.RatesService = Depends(rate_service.get_rates_service)
 
     @router.get("/", response_model=list[RatesResponse])
     async def get_all(self) -> list[RatesResponse]:
